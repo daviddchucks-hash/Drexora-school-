@@ -137,6 +137,9 @@ function initRegisterForm() {
     const email    = document.getElementById('reg-email')?.value.trim();
     const password = document.getElementById('reg-password')?.value;
     const confirm  = document.getElementById('reg-confirm-password')?.value;
+    const gender   = document.getElementById('reg-gender')?.value;
+    const phone    = document.getElementById('reg-phone')?.value.trim();
+    const parent   = document.getElementById('reg-parent')?.value.trim();
     const cls      = document.getElementById('reg-class')?.value;
     const terms    = document.getElementById('reg-terms')?.checked;
 
@@ -152,6 +155,8 @@ function initRegisterForm() {
     if (!password)  { showError('Please enter a password.'); return; }
     if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
     if (password !== confirm) { showError('Passwords do not match.'); return; }
+    if (!gender)    { showError('Please select your gender.'); return; }
+    if (!parent)    { showError('Please enter your parent/guardian name.'); return; }
     if (!cls)       { showError('Please select your class.'); return; }
     if (selectedSubjects.length === 0) { showError('Please select at least one subject.'); return; }
     if (!terms)     { showError('Please accept the terms to continue.'); return; }
@@ -172,15 +177,14 @@ function initRegisterForm() {
         fullname,
         dob,
         email,
+        gender,
+        phone:  phone  || '',
+        parent: parent || '',
         class: cls,
         subjects: selectedSubjects,
-        // These fields are editable by the student later
-        phone: '',
-        parent: '',
         photo: '',
         admissionNo: '',
-        gender: '',
-        // Track that these fields are locked
+        // Track that these fields are locked (cannot be self-edited later)
         lockedFields: ['fullname', 'dob', 'email', 'class', 'subjects'],
         registeredBySelf: true,
         createdAt: Date.now()
