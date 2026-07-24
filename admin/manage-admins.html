@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Admin Accounts — Drexora Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
+
+  <!-- ===== PASSWORD GATE OVERLAY ===== -->
+  <div class="modal-overlay active" id="password-gate" style="z-index:9999;background:rgba(10,22,40,.92);backdrop-filter:blur(6px)">
+    <div class="modal" style="max-width:420px;text-align:center">
+      <div style="margin-bottom:1.5rem">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--primary-dark),var(--primary));display:inline-flex;align-items:center;justify-content:center;margin-bottom:1rem">
+          <i class="fas fa-shield-alt" style="font-size:1.6rem;color:#fff"></i>
+        </div>
+        <h2 style="font-size:1.3rem;margin-bottom:.35rem">Access Restricted</h2>
+        <p style="color:var(--text-muted);font-size:.88rem;margin:0">Enter the admin portal password to manage admin accounts.</p>
+      </div>
+      <form id="password-gate-form">
+        <div class="form-group" style="text-align:left">
+          <label class="form-label">Portal Password</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="gate-password" placeholder="Enter password" required autofocus>
+            <button type="button" class="toggle-pass"><i class="fas fa-eye"></i></button>
+          </div>
+          <div id="gate-error" style="color:var(--danger);font-size:.82rem;margin-top:.4rem;display:none">
+            <i class="fas fa-times-circle"></i> Incorrect password. Please try again.
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:.5rem" id="gate-btn">
+          <i class="fas fa-unlock"></i> Unlock
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== CREATE ADMIN MODAL ===== -->
+  <div class="modal-overlay" id="create-admin-modal">
+    <div class="modal" style="max-width:500px">
+      <div class="modal-header">
+        <span class="modal-title"><i class="fas fa-user-shield"></i> Create Admin Account</span>
+        <button class="modal-close" onclick="Modal.close('create-admin-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="create-admin-form">
+        <div class="form-group">
+          <label class="form-label">Full Name <span style="color:var(--danger)">*</span></label>
+          <input type="text" class="form-control" id="admin-fullname" placeholder="e.g. Mrs. Adaeze Okonkwo" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address <span style="color:var(--danger)">*</span></label>
+          <input type="email" class="form-control" id="admin-email" placeholder="admin@drexora.edu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role / Title</label>
+          <input type="text" class="form-control" id="admin-role" placeholder="e.g. Vice Principal, Form Master">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span style="color:var(--danger)">*</span></label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="admin-password" placeholder="Min. 8 characters" required minlength="8">
+            <button type="button" class="toggle-pass"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password <span style="color:var(--danger)">*</span></label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="admin-password-confirm" placeholder="Repeat password" required>
+            <button type="button" class="toggle-pass"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:.85rem 1rem;font-size:.82rem;color:var(--text-muted);margin-bottom:1rem">
+          <i class="fas fa-info-circle" style="color:var(--primary)"></i>
+          This will create a Firebase Authentication account <strong>and</strong> grant admin privileges in the database. The new admin can log in immediately.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="Modal.close('create-admin-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="create-admin-btn"><i class="fas fa-user-shield"></i> Create Admin</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== DELETE ADMIN MODAL ===== -->
+  <div class="modal-overlay" id="delete-admin-modal">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <span class="modal-title" style="color:var(--danger)"><i class="fas fa-exclamation-triangle"></i> Remove Admin</span>
+        <button class="modal-close" onclick="Modal.close('delete-admin-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <p style="margin-bottom:1rem">Are you sure you want to remove <strong id="delete-admin-name">this admin</strong>? They will lose all admin privileges immediately. <strong>This cannot be undone.</strong></p>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="Modal.close('delete-admin-modal')">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-delete-admin-btn"><i class="fas fa-user-times"></i> Remove Admin</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="portal-layout">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar admin-sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">D</div>
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Drexora Admin</div>
+          <div class="sidebar-brand-tagline">Control Panel</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Dashboard</div>
+        <a class="nav-link" data-page="index.html" href="index.html"><i class="fas fa-chart-pie nav-icon"></i> Overview</a>
+        <div class="nav-section-label" style="margin-top:.5rem">Management</div>
+        <a class="nav-link" data-page="students.html" href="students.html"><i class="fas fa-users nav-icon"></i> Students</a>
+        <a class="nav-link" data-page="results.html" href="results.html"><i class="fas fa-chart-bar nav-icon"></i> Results</a>
+        <a class="nav-link" data-page="announcements.html" href="announcements.html"><i class="fas fa-bullhorn nav-icon"></i> Announcements</a>
+        <a class="nav-link active" data-page="manage-admins.html" href="manage-admins.html"><i class="fas fa-user-shield nav-icon"></i> Admin Accounts</a>
+        <div class="nav-section-label" style="margin-top:.5rem">Account</div>
+        <a class="nav-link" data-logout href="#" style="color:#fca5a5"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-pill-avatar" id="sidebar-user-photo">A</div>
+          <div class="user-pill-info">
+            <div class="user-pill-name" id="sidebar-user-name">Administrator</div>
+            <div class="user-pill-role" id="sidebar-user-role">Administrator</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+          <span class="topbar-title">Admin Accounts</span>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" data-theme-toggle><i class="fas fa-moon theme-icon"></i></button>
+          <button class="btn btn-primary btn-sm" id="add-admin-btn">
+            <i class="fas fa-user-shield"></i> New Admin
+          </button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="admin-page-header">
+          <h1><i class="fas fa-user-shield" style="color:var(--gold-500)"></i> Admin Account Management</h1>
+          <p>Create, view, and remove administrator accounts. Only existing admins can access this section.</p>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-grid" style="margin-bottom:1.5rem">
+          <div class="stat-card stat-card-blue">
+            <div class="stat-card-icon"><i class="fas fa-user-shield"></i></div>
+            <div class="stat-card-body">
+              <div class="stat-card-label">Total Admins</div>
+              <div class="stat-card-value" id="admin-count">—</div>
+            </div>
+          </div>
+          <div class="stat-card stat-card-gold">
+            <div class="stat-card-icon"><i class="fas fa-user-check"></i></div>
+            <div class="stat-card-body">
+              <div class="stat-card-label">Current Session</div>
+              <div class="stat-card-value" id="current-admin-label">You</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admins Table -->
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
+            <div class="search-bar" style="flex:1;min-width:200px;max-width:340px">
+              <i class="fas fa-search"></i>
+              <input type="text" id="admin-search" placeholder="Search by name or email…">
+            </div>
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <span class="text-muted" style="font-size:.85rem" id="admin-table-count">Loading…</span>
+              <button class="btn btn-sm btn-outline" onclick="loadAdmins()">
+                <i class="fas fa-sync"></i>
+              </button>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Avatar</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Role / Title</th>
+                  <th>Added</th>
+                  <th class="actions-cell">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admins-tbody">
+                <tr><td colspan="6"><div class="skeleton" style="height:40px"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/admin-manage-admins.js"></script>
+  <script>
+    // Password visibility toggles
+    document.querySelectorAll('.toggle-pass').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const inp = btn.closest('.input-group').querySelector('input');
+        if (!inp) return;
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        btn.innerHTML = inp.type === 'text' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+      });
+    });
+  </script>
+</body>
+</html>

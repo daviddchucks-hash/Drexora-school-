@@ -34,6 +34,13 @@
       ".read":  "auth != null",
       // Only admins can post or delete announcements
       ".write": "root.child('admins').child(auth.uid).exists()"
+    },
+
+    "settings": {
+      // Only admins can read settings (includes portal password)
+      ".read":  "root.child('admins').child(auth.uid).exists()",
+      // Only admins can write settings
+      ".write": "root.child('admins').child(auth.uid).exists()"
     }
   }
 }
