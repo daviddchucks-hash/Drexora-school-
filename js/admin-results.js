@@ -155,6 +155,19 @@ function populateStudentDropdown(selectId, classFilter) {
     }).join('');
 }
 
+/* ---------- Firebase Key Sanitiser ---------- */
+// Firebase keys cannot contain . # $ / [ ]
+// We replace each with a short token and also store displayName in the value.
+function sanitizeKey(str) {
+  return str
+    .replace(/\./g,  '_dot_')
+    .replace(/#/g,   '_hash_')
+    .replace(/\$/g,  '_dollar_')
+    .replace(/\//g,  '_slash_')
+    .replace(/\[/g,  '_lbr_')
+    .replace(/\]/g,  '_rbr_');
+}
+
 /* ---------- Add Subject Row ---------- */
 function addSubjectRow(subjectName = '', ca = '', exam = '', remark = '') {
   const container = document.getElementById('subjects-container');
@@ -267,7 +280,7 @@ function initResultsForm() {
     const rows = document.querySelectorAll('.subject-entry');
     if (!rows.length) { Toast.warning('Add at least one subject.'); return; }
 
-    // Collect subjects
+    // Collect subjects — sanitize names for Firebase keys, store original as displayName
     const subjects = {};
     let valid = true;
     rows.forEach(row => {
@@ -276,7 +289,8 @@ function initResultsForm() {
       const exam  = parseFloat(row.querySelector('.subj-exam')?.value) || 0;
       const total = parseFloat(row.querySelector('.subj-total')?.value) || ca + exam;
       if (!name) { valid = false; return; }
-      subjects[name] = { ca, exam, total };
+      const key = sanitizeKey(name);
+      subjects[key] = { ca, exam, total, displayName: name };
     });
     if (!valid) { Toast.warning('All subjects must have a name.'); return; }
 
@@ -333,17 +347,19 @@ async function loadStudentResults(uid) {
         const tData    = data[session][term];
         const subjects = tData.subjects || tData;
         const meta     = tData.meta || {};
-        const rows     = Object.entries(subjects).filter(([k]) => k !== 'meta').map(([subj, s]) => {
-          const total = parseFloat(s.total || s.score || 0);
+        const rows     = Object.entries(subjects).filter(([k]) => k !== 'meta').map(([key, s]) => {
+          const total       = parseFloat(s.total || s.score || 0);
+          // Use stored displayName if present (new uploads), fall back to raw key (legacy data)
+          const displayName = s.displayName || key;
           return `
             <tr>
-              <td>${escapeHtml(subj)}</td>
+              <td>${escapeHtml(displayName)}</td>
               <td>${s.ca !== undefined ? s.ca : '—'}</td>
               <td>${s.exam !== undefined ? s.exam : '—'}</td>
               <td class="fw-700">${total || '—'}</td>
               <td><span class="badge ${Format.gradeColor(total)}">${Format.grade(total)}</span></td>
               <td>
-                <button class="btn btn-sm btn-danger btn-icon" onclick="deleteResult('${escapeHtml(uid)}','${escapeHtml(session)}','${escapeHtml(term)}','${escapeHtml(subj)}')">
+                <button class="btn btn-sm btn-danger btn-icon" onclick="deleteResult('${escapeHtml(uid)}','${escapeHtml(session)}','${escapeHtml(term)}','${escapeHtml(key)}')">
                   <i class="fas fa-trash"></i>
                 </button>
               </td>
