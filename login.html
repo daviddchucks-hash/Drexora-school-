@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login — Drexora School Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body{min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#0a1628 0%,#0d2b6e 50%,#1565c0 100%);padding:1rem;position:relative;overflow:hidden}
+    body::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+    .login-container{width:100%;max-width:440px;position:relative;z-index:1;animation:loginFadeIn .5s ease both}
+    @keyframes loginFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .login-logo{text-align:center;margin-bottom:2rem}
+    .login-logo-box{width:68px;height:68px;background:linear-gradient(135deg,#f9a825,#f57f17);border-radius:18px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:1.8rem;color:#0d2b6e;margin-bottom:1rem;box-shadow:0 8px 30px rgba(249,168,37,.4)}
+    .login-school-name{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:.25rem}
+    .login-tagline{font-size:.82rem;color:rgba(255,255,255,.5)}
+    .login-card{background:var(--surface);border-radius:var(--radius-lg);padding:2.25rem;box-shadow:0 25px 60px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1)}
+    .login-card-title{font-size:1.4rem;font-weight:800;text-align:center;margin-bottom:.35rem}
+    .login-card-subtitle{font-size:.85rem;color:var(--text-muted);text-align:center;margin-bottom:2rem}
+    .login-error{background:#fee2e2;border:1px solid #fecaca;color:#991b1b;border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:.85rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem}
+    .login-divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0}
+    .login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .login-divider span{font-size:.78rem;color:var(--text-muted);white-space:nowrap}
+    .login-footer{text-align:center;margin-top:1.75rem}
+    .login-footer a{color:rgba(255,255,255,.6);font-size:.82rem;transition:color .2s}
+    .login-footer a:hover{color:#fff}
+    .login-back{display:flex;align-items:center;justify-content:center;gap:.5rem;color:rgba(255,255,255,.6);font-size:.82rem;margin-top:1.25rem;cursor:pointer;transition:color .2s}
+    .login-back:hover{color:#fff}
+    .btn-google{display:flex;align-items:center;justify-content:center;gap:.75rem;width:100%;padding:.7rem;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .btn-google:hover{border-color:var(--primary);background:var(--bg)}
+    .strength-bar{height:4px;border-radius:2px;background:var(--border);margin-top:.4rem;overflow:hidden}
+    .strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0}
+    [data-theme="dark"] .login-card{background:var(--surface);border-color:var(--border)}
+  </style>
+</head>
+<body>
+  <div id="toast-container"></div>
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
+
+  <div class="login-container">
+    <!-- Logo -->
+    <div class="login-logo">
+      <div class="login-logo-box">D</div>
+      <div class="login-school-name">Drexora School</div>
+      <div class="login-tagline">Excellence in Education</div>
+    </div>
+
+    <!-- Card -->
+    <div class="login-card">
+      <div class="login-card-title">Welcome Back</div>
+      <div class="login-card-subtitle">Sign in to access your student portal</div>
+
+      <!-- Error message -->
+      <div class="login-error d-none" id="login-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span></span>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <div class="input-group">
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" class="form-control" id="login-email" placeholder="student@drexoraschool.edu.ng" autocomplete="username" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="flex-between mb-1">
+            <label class="form-label" for="login-password" style="margin-bottom:0">Password</label>
+            <button type="button" class="btn btn-ghost btn-sm" id="forgot-password-btn" style="padding:.2rem .5rem;font-size:.78rem">Forgot Password?</button>
+          </div>
+          <div class="input-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" class="form-control" id="login-password" placeholder="Enter your password" autocomplete="current-password" required>
+            <button type="button" class="toggle-pass" tabindex="-1" aria-label="Show password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group" style="flex-direction:row;align-items:center;gap:.5rem;margin-bottom:1.5rem">
+          <input type="checkbox" id="remember-me" style="width:16px;height:16px;cursor:pointer;accent-color:var(--primary)">
+          <label for="remember-me" style="font-size:.85rem;color:var(--text-muted);cursor:pointer;margin:0">Remember me on this device</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">
+          <i class="fas fa-sign-in-alt"></i> Sign In to Portal
+        </button>
+      </form>
+
+      <div class="login-divider"><span>NEED HELP?</span></div>
+
+      <div style="text-align:center;font-size:.83rem;color:var(--text-muted);line-height:1.7">
+        Having trouble logging in?<br>
+        Contact your <strong style="color:var(--text)">class teacher</strong> or the <strong style="color:var(--text)">school administrator</strong>.
+      </div>
+    </div>
+
+    <!-- Back link -->
+    <a href="index.html" class="login-back">
+      <i class="fas fa-arrow-left"></i> Back to School Website
+    </a>
+
+    <!-- Theme toggle -->
+    <div style="text-align:center;margin-top:1.25rem">
+      <button data-theme-toggle style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);padding:.5rem 1rem;border-radius:999px;cursor:pointer;font-size:.8rem;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s">
+        <i class="fas fa-moon theme-icon"></i>
+        <span>Toggle Dark Mode</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

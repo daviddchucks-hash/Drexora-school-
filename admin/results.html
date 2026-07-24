@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Results — Drexora Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
+
+  <div class="portal-layout">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar admin-sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">D</div>
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Drexora Admin</div>
+          <div class="sidebar-brand-tagline">Control Panel</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Dashboard</div>
+        <a class="nav-link" data-page="index.html" href="index.html"><i class="fas fa-chart-pie nav-icon"></i> Overview</a>
+        <div class="nav-section-label" style="margin-top:.5rem">Management</div>
+        <a class="nav-link" data-page="students.html" href="students.html"><i class="fas fa-users nav-icon"></i> Students</a>
+        <a class="nav-link active" data-page="results.html" href="results.html"><i class="fas fa-chart-bar nav-icon"></i> Results</a>
+        <a class="nav-link" data-page="announcements.html" href="announcements.html"><i class="fas fa-bullhorn nav-icon"></i> Announcements</a>
+        <div class="nav-section-label" style="margin-top:.5rem">Account</div>
+        <a class="nav-link" data-logout href="#" style="color:#fca5a5"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-pill-avatar" id="sidebar-user-photo">A</div>
+          <div class="user-pill-info">
+            <div class="user-pill-name" id="sidebar-user-name">Administrator</div>
+            <div class="user-pill-role" id="sidebar-user-role">Administrator</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+          <span class="topbar-title">Manage Results</span>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" data-theme-toggle><i class="fas fa-moon theme-icon"></i></button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="admin-page-header">
+          <h1><i class="fas fa-chart-bar" style="color:var(--gold-500)"></i> Results Management</h1>
+          <p>Upload, edit, and manage student academic results for any session and term.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--border);padding-bottom:0">
+          <button class="btn btn-ghost" id="tab-upload" onclick="switchTab('upload')" style="border-radius:var(--radius-sm) var(--radius-sm) 0 0;border-bottom:3px solid var(--primary);color:var(--primary)">
+            <i class="fas fa-upload"></i> Upload Results
+          </button>
+          <button class="btn btn-ghost" id="tab-view" onclick="switchTab('view')" style="border-radius:var(--radius-sm) var(--radius-sm) 0 0">
+            <i class="fas fa-eye"></i> View / Edit Results
+          </button>
+        </div>
+
+        <!-- Upload Tab -->
+        <div id="panel-upload">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-upload"></i> Upload Student Results</span>
+            </div>
+            <form id="upload-results-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Select Student <span style="color:var(--danger)">*</span></label>
+                  <select class="form-control form-select" id="result-student-select" required>
+                    <option value="">— Loading students… —</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Academic Session <span style="color:var(--danger)">*</span></label>
+                  <input type="text" class="form-control" id="result-session" placeholder="e.g. 2025/2026" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Term <span style="color:var(--danger)">*</span></label>
+                  <select class="form-control form-select" id="result-term" required>
+                    <option value="">Select Term</option>
+                    <option>First Term</option>
+                    <option>Second Term</option>
+                    <option>Third Term</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Position in Class</label>
+                  <input type="number" class="form-control" id="result-position" placeholder="e.g. 5" min="1">
+                </div>
+              </div>
+
+              <hr class="divider">
+              <div class="flex-between mb-2">
+                <h4 style="font-size:.95rem"><i class="fas fa-list"></i> Subject Scores</h4>
+                <button type="button" class="btn btn-sm btn-outline" id="add-subject-btn">
+                  <i class="fas fa-plus"></i> Add Subject
+                </button>
+              </div>
+
+              <!-- Subject header labels -->
+              <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:.75rem;padding:0 .85rem;margin-bottom:.4rem">
+                <span style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.06em">Subject</span>
+                <span style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.06em">C.A. (0-40)</span>
+                <span style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.06em">Exam (0-60)</span>
+                <span style="font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.06em">Total</span>
+                <span></span>
+              </div>
+              <div id="subjects-container"></div>
+
+              <hr class="divider">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Next Term Begins</label>
+                  <input type="text" class="form-control" id="result-next-term" placeholder="e.g. September 8, 2025">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Class Teacher's Comment</label>
+                <textarea class="form-control" id="result-teacher-comment" rows="2" placeholder="e.g. Excellent performance this term. Keep it up!"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Principal's Comment</label>
+                <textarea class="form-control" id="result-principal-comment" rows="2" placeholder="e.g. Approved. Brilliant student."></textarea>
+              </div>
+
+              <div style="display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.25rem">
+                <button type="reset" class="btn btn-ghost" onclick="document.getElementById('subjects-container').innerHTML='';setTimeout(()=>['English Language','Mathematics','Basic Science','Social Studies','Civic Education'].forEach(s=>addSubjectRow(s)),50)">
+                  <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-upload"></i> Upload Results
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- View/Edit Tab -->
+        <div id="panel-view" class="d-none">
+          <div class="card mb-3">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Select Student to View Results</label>
+              <select class="form-control form-select" id="view-student-select">
+                <option value="">— Select a student —</option>
+              </select>
+            </div>
+          </div>
+          <div id="view-results-container">
+            <div class="empty-state">
+              <i class="fas fa-search"></i>
+              <h3>Select a Student</h3>
+              <p>Choose a student above to view and manage their results.</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/admin-results.js"></script>
+  <script>
+    function switchTab(tab) {
+      const tabs   = ['upload', 'view'];
+      const panels = { upload: document.getElementById('panel-upload'), view: document.getElementById('panel-view') };
+      const btns   = { upload: document.getElementById('tab-upload'),   view: document.getElementById('tab-view') };
+      tabs.forEach(t => {
+        panels[t].classList.toggle('d-none', t !== tab);
+        btns[t].style.borderBottom = t === tab ? '3px solid var(--primary)' : 'none';
+        btns[t].style.color = t === tab ? 'var(--primary)' : '';
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Results — Drexora School Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
+
+  <div class="portal-layout">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">D</div>
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Drexora School</div>
+          <div class="sidebar-brand-tagline">Student Portal</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main Menu</div>
+        <a class="nav-link" data-page="dashboard.html" href="dashboard.html"><i class="fas fa-th-large nav-icon"></i> Dashboard</a>
+        <a class="nav-link active" data-page="results.html" href="results.html"><i class="fas fa-chart-bar nav-icon"></i> My Results</a>
+        <a class="nav-link" data-page="notifications.html" href="notifications.html"><i class="fas fa-bell nav-icon"></i> Announcements</a>
+        <div class="nav-section-label" style="margin-top:.5rem">Account</div>
+        <a class="nav-link" data-page="profile.html" href="profile.html"><i class="fas fa-user-circle nav-icon"></i> My Profile</a>
+        <a class="nav-link" data-logout="student" href="#" style="color:#fca5a5"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill" onclick="window.location.href='profile.html'">
+          <div class="user-pill-avatar" id="sidebar-user-photo"></div>
+          <div class="user-pill-info">
+            <div class="user-pill-name" id="sidebar-user-name">Loading…</div>
+            <div class="user-pill-role" id="sidebar-user-role">Student</div>
+          </div>
+          <i class="fas fa-chevron-right user-pill-arrow"></i>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+          <span class="topbar-title">My Results</span>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" data-theme-toggle title="Toggle theme"><i class="fas fa-moon theme-icon"></i></button>
+          <button class="topbar-btn" onclick="window.location.href='notifications.html'"><i class="fas fa-bell"></i></button>
+          <button class="topbar-btn" onclick="window.location.href='profile.html'"><i class="fas fa-user-circle"></i></button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1>Academic Results</h1>
+          <p>View your term results, grades, positions, and download your report card as PDF.</p>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="grid-4 mb-3">
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-blue"><i class="fas fa-book-open"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-total-subjects">—</div>
+              <div class="stat-label">Subjects</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-gold"><i class="fas fa-calculator"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-total-score">—</div>
+              <div class="stat-label">Total Score</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-green"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-average">—</div>
+              <div class="stat-label">Average</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-red"><i class="fas fa-trophy"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-position">—</div>
+              <div class="stat-label">Position</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Bar + Actions -->
+        <div class="card mb-3">
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+            <div class="form-group" style="margin-bottom:0;flex:1;min-width:160px">
+              <label class="form-label">Session</label>
+              <select class="form-control form-select" id="session-select">
+                <option>Loading…</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;flex:1;min-width:160px">
+              <label class="form-label">Term</label>
+              <select class="form-control form-select" id="term-select">
+                <option>Loading…</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:.75rem;align-items:flex-end;margin-top:1.3rem;flex-wrap:wrap">
+              <button class="btn btn-primary" id="download-pdf-btn">
+                <i class="fas fa-file-pdf"></i> Download PDF
+              </button>
+              <button class="btn btn-outline" id="print-btn">
+                <i class="fas fa-print"></i> Print
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Table -->
+        <div id="results-container">
+          <div class="skeleton" style="height:240px;border-radius:var(--radius)"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/results.js"></script>
+</body>
+</html>

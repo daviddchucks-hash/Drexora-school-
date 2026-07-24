@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — Drexora School Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal-overlay" id="edit-profile-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title"><i class="fas fa-edit"></i> Edit Profile</span>
+        <button class="modal-close" onclick="Modal.close('edit-profile-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="edit-profile-form">
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <div class="input-group">
+            <i class="fas fa-phone input-icon"></i>
+            <input type="tel" class="form-control" id="edit-phone" placeholder="+234 800 000 0000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Parent/Guardian Name</label>
+          <div class="input-group">
+            <i class="fas fa-user-friends input-icon"></i>
+            <input type="text" class="form-control" id="edit-parent" placeholder="Parent or guardian name">
+          </div>
+          <span class="form-hint">Only these fields are editable. Contact admin for other changes.</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="Modal.close('edit-profile-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal-overlay" id="change-password-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title"><i class="fas fa-key"></i> Change Password</span>
+        <button class="modal-close" onclick="Modal.close('change-password-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="change-password-form">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <div class="input-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" class="form-control" id="current-password" placeholder="Enter current password" required>
+            <button type="button" class="toggle-pass"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <div class="input-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" class="form-control" id="new-password" placeholder="Minimum 8 characters" required>
+            <button type="button" class="toggle-pass"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <div class="input-group">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" class="form-control" id="confirm-password" placeholder="Repeat new password" required>
+            <button type="button" class="toggle-pass"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="Modal.close('change-password-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-key"></i> Change Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="portal-layout">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">D</div>
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Drexora School</div>
+          <div class="sidebar-brand-tagline">Student Portal</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main Menu</div>
+        <a class="nav-link" data-page="dashboard.html" href="dashboard.html"><i class="fas fa-th-large nav-icon"></i> Dashboard</a>
+        <a class="nav-link" data-page="results.html" href="results.html"><i class="fas fa-chart-bar nav-icon"></i> My Results</a>
+        <a class="nav-link" data-page="notifications.html" href="notifications.html"><i class="fas fa-bell nav-icon"></i> Announcements</a>
+        <div class="nav-section-label" style="margin-top:.5rem">Account</div>
+        <a class="nav-link active" data-page="profile.html" href="profile.html"><i class="fas fa-user-circle nav-icon"></i> My Profile</a>
+        <a class="nav-link" data-logout="student" href="#" style="color:#fca5a5"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill" onclick="window.location.href='profile.html'">
+          <div class="user-pill-avatar" id="sidebar-user-photo"></div>
+          <div class="user-pill-info">
+            <div class="user-pill-name" id="sidebar-user-name">Loading…</div>
+            <div class="user-pill-role" id="sidebar-user-role">Student</div>
+          </div>
+          <i class="fas fa-chevron-right user-pill-arrow"></i>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+          <span class="topbar-title">My Profile</span>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" data-theme-toggle><i class="fas fa-moon theme-icon"></i></button>
+          <button class="topbar-btn" onclick="window.location.href='notifications.html'"><i class="fas fa-bell"></i></button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <h1>My Profile</h1>
+          <p>View and manage your student information.</p>
+        </div>
+
+        <div class="grid-2">
+          <!-- Profile Card -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-id-card"></i> Student Profile</span>
+              <div class="flex gap-1">
+                <button class="btn btn-sm btn-outline" id="edit-profile-btn"><i class="fas fa-edit"></i> Edit</button>
+                <button class="btn btn-sm btn-primary" id="upload-photo-btn"><i class="fas fa-camera"></i> Photo</button>
+                <input type="file" id="photo-input" accept="image/*" class="d-none">
+              </div>
+            </div>
+            <!-- Photo -->
+            <div style="text-align:center;padding:1.25rem 0;border-bottom:1px solid var(--border);margin-bottom:1.25rem">
+              <div id="profile-photo-display">
+                <div class="avatar avatar-lg avatar-placeholder" style="margin:0 auto">ST</div>
+              </div>
+              <div class="fw-700 mt-2" style="font-size:1.1rem" id="disp-fullname">—</div>
+              <div class="text-muted" style="font-size:.85rem;margin-top:.2rem" id="disp-class">—</div>
+              <span class="badge badge-primary mt-1"><i class="fas fa-id-badge"></i> <span id="disp-admission">—</span></span>
+            </div>
+            <!-- Info -->
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-venus-mars"></i> Gender</div>
+                <div class="info-item-value" id="disp-gender">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-birthday-cake"></i> Date of Birth</div>
+                <div class="info-item-value" id="disp-dob">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-envelope"></i> Email</div>
+                <div class="info-item-value" id="disp-email" style="font-size:.85rem">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-user-friends"></i> Parent/Guardian</div>
+                <div class="info-item-value" id="disp-parent">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-phone"></i> Phone</div>
+                <div class="info-item-value" id="disp-phone">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Settings -->
+          <div style="display:flex;flex-direction:column;gap:1.25rem">
+            <!-- Security Card -->
+            <div class="card">
+              <div class="card-header"><span class="card-title"><i class="fas fa-shield-alt"></i> Security</span></div>
+              <div class="flex-between" style="padding:.75rem 0;border-bottom:1px solid var(--border)">
+                <div>
+                  <div class="fw-700" style="font-size:.9rem">Password</div>
+                  <div class="text-muted" style="font-size:.8rem">Keep your account secure</div>
+                </div>
+                <button class="btn btn-sm btn-outline" data-open-change-pass>
+                  <i class="fas fa-key"></i> Change
+                </button>
+              </div>
+              <div class="flex-between" style="padding:.75rem 0">
+                <div>
+                  <div class="fw-700" style="font-size:.9rem">Account Status</div>
+                  <div class="text-muted" style="font-size:.8rem">Your account is active and verified</div>
+                </div>
+                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Active</span>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+              <div class="card-header"><span class="card-title"><i class="fas fa-bolt"></i> Quick Actions</span></div>
+              <div style="display:flex;flex-direction:column;gap:.6rem">
+                <a href="results.html" class="btn btn-outline btn-block" style="justify-content:flex-start">
+                  <i class="fas fa-chart-bar"></i> View My Results
+                </a>
+                <a href="notifications.html" class="btn btn-outline btn-block" style="justify-content:flex-start">
+                  <i class="fas fa-bell"></i> School Announcements
+                </a>
+                <button class="btn btn-ghost btn-block" style="justify-content:flex-start" data-logout="student">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+              </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class="card" style="background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff">
+              <div style="margin-bottom:.75rem">
+                <i class="fas fa-lightbulb" style="color:var(--gold-500);font-size:1.4rem;margin-bottom:.5rem;display:block"></i>
+                <div class="fw-700">Keep Your Info Updated</div>
+              </div>
+              <p style="color:rgba(255,255,255,.75);font-size:.83rem;margin:0">
+                Ensure your phone number and parent/guardian details are always current so the school can reach you easily.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/profile.js"></script>
+  <script>
+    // Password toggle for modals
+    document.querySelectorAll('.toggle-pass').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const inp = btn.closest('.input-group').querySelector('input');
+        if (!inp) return;
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        btn.innerHTML = inp.type === 'text' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+      });
+    });
+  </script>
+</body>
+</html>

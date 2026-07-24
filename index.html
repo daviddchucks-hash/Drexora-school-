@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Drexora School — A premium school management portal for students, parents, and administrators.">
+  <title>Drexora School — Excellence in Education</title>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <style>
+    /* Inline landing extras */
+    .mr-1{margin-right:.25rem}
+    .scroll-top{
+      position:fixed;bottom:2rem;right:1.5rem;
+      width:44px;height:44px;border-radius:50%;
+      background:var(--primary);color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1rem;cursor:pointer;border:none;
+      box-shadow:var(--shadow-md);
+      opacity:0;pointer-events:none;
+      transition:opacity .3s,transform .3s;z-index:300;
+    }
+    .scroll-top.visible{opacity:1;pointer-events:all}
+    .scroll-top:hover{transform:translateY(-3px)}
+  </style>
+</head>
+<body>
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+  <!-- Spinner Overlay -->
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
+  <!-- Scroll to top -->
+  <button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="landing-nav" id="landing-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="#">
+        <div class="nav-logo-box">D</div>
+        <span class="nav-brand-name">Drexora School</span>
+      </a>
+      <div class="nav-links">
+        <span class="nav-link-item" data-scroll="about">About</span>
+        <span class="nav-link-item" data-scroll="features">Features</span>
+        <span class="nav-link-item" data-scroll="stats">Statistics</span>
+        <span class="nav-link-item" data-scroll="contact">Contact</span>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" data-theme-toggle title="Toggle theme">
+          <i class="fas fa-moon theme-icon"></i>
+        </button>
+        <a href="login.html" class="btn btn-secondary btn-sm">
+          <i class="fas fa-sign-in-alt"></i> Student Login
+        </a>
+        <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav-menu" id="mobile-nav-menu">
+    <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close">
+      <i class="fas fa-times"></i>
+    </button>
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem">
+      <div class="footer-logo-box">D</div>
+      <span style="color:#fff;font-weight:800;font-size:1.05rem">Drexora School</span>
+    </div>
+    <div class="mobile-nav-links">
+      <span class="mobile-nav-link" data-scroll="about">About</span>
+      <span class="mobile-nav-link" data-scroll="features">Features</span>
+      <span class="mobile-nav-link" data-scroll="stats">Statistics</span>
+      <span class="mobile-nav-link" data-scroll="contact">Contact</span>
+    </div>
+    <div style="margin-top:2rem">
+      <a href="login.html" class="btn btn-secondary btn-block">
+        <i class="fas fa-sign-in-alt"></i> Student Login
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="home">
+    <div class="hero-particles" id="hero-particles"></div>
+    <div class="hero-content">
+      <!-- Text -->
+      <div class="hero-text">
+        <div class="hero-badge">
+          <i class="fas fa-star"></i>
+          Nigeria's Premier School Portal
+        </div>
+        <h1 class="hero-title">
+          Empowering <span class="highlight">Students</span> to Achieve Excellence
+        </h1>
+        <p class="hero-subtitle">
+          Drexora School provides a world-class educational experience. Access your results, profile, and announcements — anytime, anywhere.
+        </p>
+        <div class="hero-actions">
+          <a href="login.html" class="btn btn-secondary btn-lg">
+            <i class="fas fa-sign-in-alt"></i> Access Portal
+          </a>
+          <span class="btn btn-outline btn-lg" style="color:#fff;border-color:rgba(255,255,255,.4)" data-scroll="about">
+            <i class="fas fa-play-circle"></i> Learn More
+          </span>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <div class="hero-stat-num" data-counter="1200">1200+</div>
+            <div class="hero-stat-label">Students</div>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num" data-counter="60">60+</div>
+            <div class="hero-stat-label">Teachers</div>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num" data-counter="98">98%</div>
+            <div class="hero-stat-label">Pass Rate</div>
+          </div>
+        </div>
+      </div>
+      <!-- Visual -->
+      <div class="hero-visual">
+        <div class="hero-card-stack">
+          <div class="hero-main-card">
+            <div class="hero-card-avatar">A</div>
+            <div class="hero-card-name">Adaeze Okonkwo</div>
+            <div class="hero-card-meta">JSS 3A — Admission: DRX/2025/001</div>
+            <hr class="hero-card-divider">
+            <div class="hero-card-info">
+              <div class="hero-card-info-item">
+                <div class="hero-card-info-label">Average Score</div>
+                <div class="hero-card-info-value">82.5%</div>
+              </div>
+              <div class="hero-card-info-item">
+                <div class="hero-card-info-label">Position</div>
+                <div class="hero-card-info-value">2nd in Class</div>
+              </div>
+              <div class="hero-card-info-item">
+                <div class="hero-card-info-label">Term</div>
+                <div class="hero-card-info-value">First Term</div>
+              </div>
+              <div class="hero-card-info-item">
+                <div class="hero-card-info-label">Session</div>
+                <div class="hero-card-info-value">2025/2026</div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-float-card">
+            <div class="hero-float-card-title">Top Scores</div>
+            <div class="hero-float-subject">
+              <span>Mathematics</span>
+              <span class="hero-float-score">95</span>
+            </div>
+            <div class="hero-float-subject">
+              <span>English</span>
+              <span class="hero-float-score">88</span>
+            </div>
+            <div class="hero-float-subject">
+              <span>Science</span>
+              <span class="hero-float-score">91</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <span>SCROLL DOWN</span>
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-image-wrapper">
+          <div class="about-icon-grid">
+            <div class="about-icon-card">
+              <i class="fas fa-graduation-cap"></i>
+              <p>Academic Excellence</p>
+            </div>
+            <div class="about-icon-card">
+              <i class="fas fa-flask"></i>
+              <p>Modern Science Labs</p>
+            </div>
+            <div class="about-icon-card">
+              <i class="fas fa-laptop-code"></i>
+              <p>Tech Enabled</p>
+            </div>
+            <div class="about-icon-card">
+              <i class="fas fa-trophy"></i>
+              <p>Award Winning</p>
+            </div>
+          </div>
+        </div>
+        <div class="about-text">
+          <div class="section-label">About Us</div>
+          <h2 class="section-title">Building Tomorrow's Leaders Today</h2>
+          <p>Drexora School has been at the forefront of quality education, nurturing young minds and providing an environment where students thrive academically, socially, and morally.</p>
+          <div class="about-features">
+            <div class="about-feature-item">
+              <div class="about-feature-icon"><i class="fas fa-check"></i></div>
+              <div class="about-feature-text">
+                <div class="about-feature-title">Qualified & Experienced Teachers</div>
+                <div class="about-feature-desc">Our teaching staff are highly qualified professionals dedicated to student success.</div>
+              </div>
+            </div>
+            <div class="about-feature-item">
+              <div class="about-feature-icon"><i class="fas fa-shield-alt"></i></div>
+              <div class="about-feature-text">
+                <div class="about-feature-title">Safe & Secure Environment</div>
+                <div class="about-feature-desc">We maintain the highest standards of student safety and wellbeing.</div>
+              </div>
+            </div>
+            <div class="about-feature-item">
+              <div class="about-feature-icon"><i class="fas fa-chart-line"></i></div>
+              <div class="about-feature-text">
+                <div class="about-feature-title">Continuous Performance Tracking</div>
+                <div class="about-feature-desc">Real-time academic performance monitoring through our digital portal.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section class="section section-alt" id="features">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Our Features</div>
+        <h2 class="section-title">Everything You Need in One Portal</h2>
+        <p class="section-desc">Our school management portal brings together all the tools students, parents, and teachers need.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-user-circle"></i></div>
+          <h3 class="feature-title">Student Dashboard</h3>
+          <p class="feature-desc">A personalized dashboard showing your profile, passport photo, class, and important academic information at a glance.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+          <h3 class="feature-title">Academic Results</h3>
+          <p class="feature-desc">View your term results with detailed subject scores, grades, positions, and teacher comments — any time, any session.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-file-pdf"></i></div>
+          <h3 class="feature-title">PDF Report Cards</h3>
+          <p class="feature-desc">Download a professional, printable PDF report card for any term — formatted exactly like an official school report card.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-bell"></i></div>
+          <h3 class="feature-title">School Announcements</h3>
+          <p class="feature-desc">Stay up to date with all school announcements, events, and important notices posted by school administration.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-user-shield"></i></div>
+          <h3 class="feature-title">Admin Control Panel</h3>
+          <p class="feature-desc">Administrators can manage students, upload results, reset passwords, and post announcements from a dedicated panel.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-lock"></i></div>
+          <h3 class="feature-title">Secure & Private</h3>
+          <p class="feature-desc">Built on Firebase — each student sees only their own data. Industry-standard authentication keeps your information safe.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+          <h3 class="feature-title">Mobile Friendly</h3>
+          <p class="feature-desc">Fully responsive design works perfectly on phones, tablets, and desktops — no app download required.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-moon"></i></div>
+          <h3 class="feature-title">Dark Mode</h3>
+          <p class="feature-desc">Switch between light and dark themes for comfortable viewing in any environment, at any time of day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATISTICS ===== -->
+  <section class="stats-section" id="stats">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div><span class="stat-box-num" data-counter="1200">0</span><span class="stat-box-suffix">+</span></div>
+        <div class="stat-box-divider"></div>
+        <div class="stat-box-label">Enrolled Students</div>
+      </div>
+      <div class="stat-box">
+        <div><span class="stat-box-num" data-counter="60">0</span><span class="stat-box-suffix">+</span></div>
+        <div class="stat-box-divider"></div>
+        <div class="stat-box-label">Qualified Teachers</div>
+      </div>
+      <div class="stat-box">
+        <div><span class="stat-box-num" data-counter="15">0</span></div>
+        <div class="stat-box-divider"></div>
+        <div class="stat-box-label">Years of Excellence</div>
+      </div>
+      <div class="stat-box">
+        <div><span class="stat-box-num" data-counter="98">0</span><span class="stat-box-suffix">%</span></div>
+        <div class="stat-box-divider"></div>
+        <div class="stat-box-label">Pass Rate</div>
+      </div>
+      <div class="stat-box">
+        <div><span class="stat-box-num" data-counter="30">0</span><span class="stat-box-suffix">+</span></div>
+        <div class="stat-box-divider"></div>
+        <div class="stat-box-label">Awards Won</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Get In Touch</div>
+        <h2 class="section-title">Contact Us</h2>
+        <p class="section-desc">Have questions? Send us a message and we'll get back to you as soon as possible.</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="contact-info-item">
+            <div class="contact-info-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="contact-info-text">
+              <div class="contact-info-label">Address</div>
+              <div class="contact-info-value">123 School Avenue, Education District<br>Lagos State, Nigeria</div>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon"><i class="fas fa-phone"></i></div>
+            <div class="contact-info-text">
+              <div class="contact-info-label">Phone</div>
+              <div class="contact-info-value">+234 800 000 0000</div>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon"><i class="fas fa-envelope"></i></div>
+            <div class="contact-info-text">
+              <div class="contact-info-label">Email</div>
+              <div class="contact-info-value">info@drexoraschool.edu.ng</div>
+            </div>
+          </div>
+          <div class="contact-info-item">
+            <div class="contact-info-icon"><i class="fas fa-clock"></i></div>
+            <div class="contact-info-text">
+              <div class="contact-info-label">School Hours</div>
+              <div class="contact-info-value">Monday – Friday: 8:00 AM – 3:30 PM</div>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form-card">
+          <h3 class="contact-form-title">Send a Message</h3>
+          <form id="contact-form">
+            <div class="form-group">
+              <label class="form-label" for="contact-name">Full Name</label>
+              <input type="text" class="form-control" id="contact-name" placeholder="Your full name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contact-email">Email Address</label>
+              <input type="email" class="form-control" id="contact-email" placeholder="your@email.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contact-message">Message</label>
+              <textarea class="form-control" id="contact-message" rows="5" placeholder="How can we help you?" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fas fa-paper-plane"></i> Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="landing-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo-row">
+            <div class="footer-logo-box">D</div>
+            <span class="footer-brand-name">Drexora School</span>
+          </div>
+          <p class="footer-desc">Building tomorrow's leaders through quality education, innovation, and character development.</p>
+          <div class="footer-socials">
+            <a class="footer-social" href="#"><i class="fab fa-facebook-f"></i></a>
+            <a class="footer-social" href="#"><i class="fab fa-twitter"></i></a>
+            <a class="footer-social" href="#"><i class="fab fa-instagram"></i></a>
+            <a class="footer-social" href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title">Quick Links</div>
+          <div class="footer-links">
+            <span class="footer-link" data-scroll="about">About Us</span>
+            <span class="footer-link" data-scroll="features">Features</span>
+            <span class="footer-link" data-scroll="stats">Statistics</span>
+            <span class="footer-link" data-scroll="contact">Contact</span>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title">Portal Access</div>
+          <div class="footer-links">
+            <a class="footer-link" href="login.html">Student Login</a>
+            <a class="footer-link" href="login.html">Admin Login</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Drexora School. All rights reserved. Built with <i class="fas fa-heart" style="color:#ef4444"></i> for education.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Firebase CDN ===== -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <!-- Local JS -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/landing.js"></script>
+  <script>
+    // Scroll to top button
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById('scroll-top');
+      if (btn) btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+    // Footer links scroll
+    document.querySelectorAll('.footer-link[data-scroll]').forEach(l => {
+      l.addEventListener('click', () => {
+        const t = document.getElementById(l.dataset.scroll);
+        if(t) t.scrollIntoView({behavior:'smooth'});
+      });
+    });
+  </script>
+</body>
+</html>

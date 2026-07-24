@@ -1,0 +1,275 @@
+/* ============================================================
+   DREXORA SCHOOL PORTAL — Admin Dashboard Styles
+   ============================================================ */
+
+/* Admin sidebar color overrides */
+.admin-sidebar {
+  background: #0a1628;
+}
+.admin-sidebar .sidebar-brand {
+  border-bottom-color: rgba(255,255,255,.06);
+}
+.admin-sidebar .nav-link.active {
+  background: var(--secondary);
+  color: #0a1628;
+}
+.admin-sidebar .sidebar-logo {
+  background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+  color: #0a1628;
+}
+
+/* Admin page header accent */
+.admin-page-header {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  color: #fff;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.admin-page-header::before {
+  content: '';
+  position: absolute;
+  right: -2rem;
+  top: -2rem;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.06);
+}
+.admin-page-header::after {
+  content: '';
+  position: absolute;
+  right: 3rem;
+  bottom: -3rem;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.04);
+}
+.admin-page-header h1 {
+  font-size: 1.5rem;
+  margin-bottom: .25rem;
+  color: #fff;
+}
+.admin-page-header p {
+  color: rgba(255,255,255,.7);
+  font-size: .88rem;
+  margin: 0;
+}
+
+/* Stat card accent colors */
+.stat-card-blue   { border-left: 4px solid var(--primary); }
+.stat-card-gold   { border-left: 4px solid var(--secondary); }
+.stat-card-green  { border-left: 4px solid var(--success); }
+.stat-card-red    { border-left: 4px solid var(--danger); }
+
+/* Upload area */
+.upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  background: var(--surface-2);
+}
+.upload-area:hover {
+  border-color: var(--primary);
+  background: var(--blue-50);
+}
+[data-theme="dark"] .upload-area:hover {
+  background: rgba(21,101,192,.1);
+}
+.upload-area i {
+  font-size: 2.5rem;
+  color: var(--text-muted);
+  margin-bottom: .75rem;
+}
+.upload-area p {
+  font-size: .85rem;
+}
+
+/* Student card grid */
+.student-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+.student-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.student-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.student-card-header {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+}
+.student-card-body {
+  padding: 1rem 1.25rem;
+}
+.student-card-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .4rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .83rem;
+}
+.student-card-field:last-child { border-bottom: none; }
+.student-card-label { color: var(--text-muted); font-weight: 600; }
+.student-card-value { color: var(--text); font-weight: 500; }
+.student-card-actions {
+  padding: .75rem 1.25rem 1rem;
+  display: flex;
+  gap: .5rem;
+}
+
+/* Results entry grid */
+.subject-entry {
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: .85rem;
+  border: 1px solid var(--border);
+  margin-bottom: .75rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: .75rem;
+  align-items: center;
+}
+.subject-entry .form-control {
+  padding: .45rem .75rem;
+  font-size: .83rem;
+}
+
+/* Announcement form */
+.ann-type-select {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.ann-type-btn {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .5rem 1rem;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+.ann-type-btn.active, .ann-type-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--blue-50);
+}
+.ann-type-btn.urgent.active { border-color: var(--danger); color: var(--danger); background: #fee2e2; }
+.ann-type-btn.event.active  { border-color: var(--secondary); color: var(--secondary-dark); background: #fef3c7; }
+.ann-type-btn.general.active{ border-color: var(--success); color: var(--success); background: #dcfce7; }
+
+/* Result score pill */
+.score-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: 800;
+}
+.score-pill-A { background: #dcfce7; color: #166534; }
+.score-pill-B { background: var(--blue-50); color: var(--primary); }
+.score-pill-C { background: #fef9c3; color: #854d0e; }
+.score-pill-D { background: #ffedd5; color: #9a3412; }
+.score-pill-F { background: #fee2e2; color: #991b1b; }
+
+/* Quick actions bar */
+.quick-actions {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.quick-actions-label {
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin-right: .5rem;
+}
+
+/* Admin dashboard chart placeholder */
+.chart-placeholder {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+  font-size: .85rem;
+}
+
+/* Status badge pulse */
+.status-active {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .6; transform: scale(.8); }
+}
+
+/* Table action buttons */
+.actions-cell {
+  white-space: nowrap;
+}
+
+/* Modal large */
+.modal-lg {
+  max-width: 720px;
+}
+
+/* Responsive adjustments */
+@media(max-width: 768px) {
+  .subject-entry {
+    grid-template-columns: 1fr 1fr;
+  }
+  .subject-entry:last-child { grid-template-columns: 1fr; }
+  .admin-page-header { padding: 1.25rem; }
+  .quick-actions { flex-direction: column; align-items: flex-start; }
+}

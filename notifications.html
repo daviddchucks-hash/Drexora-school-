@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Announcements — Drexora School Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
+
+  <div class="portal-layout">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">D</div>
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Drexora School</div>
+          <div class="sidebar-brand-tagline">Student Portal</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main Menu</div>
+        <a class="nav-link" data-page="dashboard.html" href="dashboard.html"><i class="fas fa-th-large nav-icon"></i> Dashboard</a>
+        <a class="nav-link" data-page="results.html" href="results.html"><i class="fas fa-chart-bar nav-icon"></i> My Results</a>
+        <a class="nav-link active" data-page="notifications.html" href="notifications.html"><i class="fas fa-bell nav-icon"></i> Announcements</a>
+        <div class="nav-section-label" style="margin-top:.5rem">Account</div>
+        <a class="nav-link" data-page="profile.html" href="profile.html"><i class="fas fa-user-circle nav-icon"></i> My Profile</a>
+        <a class="nav-link" data-logout="student" href="#" style="color:#fca5a5"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill" onclick="window.location.href='profile.html'">
+          <div class="user-pill-avatar" id="sidebar-user-photo"></div>
+          <div class="user-pill-info">
+            <div class="user-pill-name" id="sidebar-user-name">Loading…</div>
+            <div class="user-pill-role" id="sidebar-user-role">Student</div>
+          </div>
+          <i class="fas fa-chevron-right user-pill-arrow"></i>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+          <span class="topbar-title">School Announcements</span>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" data-theme-toggle><i class="fas fa-moon theme-icon"></i></button>
+          <button class="topbar-btn" onclick="window.location.href='profile.html'"><i class="fas fa-user-circle"></i></button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="page-header">
+          <h1>Announcements</h1>
+          <p>Stay informed with the latest news and updates from Drexora School.</p>
+        </div>
+
+        <!-- Search + Count -->
+        <div class="card mb-3">
+          <div class="flex-between" style="flex-wrap:wrap;gap:1rem">
+            <div class="search-bar" style="flex:1;min-width:200px;max-width:400px">
+              <i class="fas fa-search"></i>
+              <input type="text" id="notif-search" placeholder="Search announcements…">
+            </div>
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <span class="text-muted" style="font-size:.85rem">
+                <span id="notif-count">0</span> announcement(s)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex gap-2 mb-2" style="flex-wrap:wrap">
+          <span class="badge badge-danger"><i class="fas fa-exclamation-circle"></i> Urgent</span>
+          <span class="badge badge-primary"><i class="fas fa-info-circle"></i> Info</span>
+          <span class="badge badge-success"><i class="fas fa-bullhorn"></i> General</span>
+          <span class="badge badge-gold"><i class="fas fa-calendar-alt"></i> Event</span>
+        </div>
+
+        <!-- Notifications Container -->
+        <div id="notifications-container">
+          <div class="skeleton" style="height:90px;margin-bottom:1rem;border-radius:var(--radius-sm)"></div>
+          <div class="skeleton" style="height:90px;margin-bottom:1rem;border-radius:var(--radius-sm)"></div>
+          <div class="skeleton" style="height:90px;border-radius:var(--radius-sm)"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/notifications.js"></script>
+</body>
+</html>

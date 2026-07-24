@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Students — Drexora Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
+
+  <!-- Create Student Modal -->
+  <div class="modal-overlay" id="create-student-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <span class="modal-title"><i class="fas fa-user-plus"></i> Add New Student</span>
+        <button class="modal-close" onclick="Modal.close('create-student-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="create-student-form">
+        <!-- Photo Preview -->
+        <div style="text-align:center;margin-bottom:1.25rem">
+          <div id="photo-preview">
+            <div style="width:80px;height:80px;border-radius:50%;background:var(--bg);border:2px dashed var(--border);display:inline-flex;align-items:center;justify-content:center;color:var(--text-muted)">
+              <i class="fas fa-camera"></i>
+            </div>
+          </div>
+          <div style="margin-top:.6rem">
+            <label for="create-photo" class="btn btn-sm btn-outline" style="cursor:pointer">
+              <i class="fas fa-upload"></i> Upload Passport Photo
+            </label>
+            <input type="file" id="create-photo" accept="image/*" class="d-none">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Name <span style="color:var(--danger)">*</span></label>
+            <input type="text" class="form-control" id="create-fullname" placeholder="e.g. Adaeze Okonkwo" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Admission Number <span style="color:var(--danger)">*</span></label>
+            <input type="text" class="form-control" id="create-admission" placeholder="e.g. DRX/2025/001">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email Address <span style="color:var(--danger)">*</span></label>
+            <input type="email" class="form-control" id="create-email" placeholder="student@email.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password <span style="color:var(--danger)">*</span></label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="create-password" placeholder="Min. 8 characters" required>
+              <button type="button" class="toggle-pass"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class <span style="color:var(--danger)">*</span></label>
+            <select class="form-control form-select" id="create-class" required>
+              <option value="">Select Class</option>
+              <optgroup label="Junior Secondary">
+                <option>JSS 1A</option><option>JSS 1B</option>
+                <option>JSS 2A</option><option>JSS 2B</option>
+                <option>JSS 3A</option><option>JSS 3B</option>
+              </optgroup>
+              <optgroup label="Senior Secondary">
+                <option>SS 1 Science</option><option>SS 1 Arts</option><option>SS 1 Commercial</option>
+                <option>SS 2 Science</option><option>SS 2 Arts</option><option>SS 2 Commercial</option>
+                <option>SS 3 Science</option><option>SS 3 Arts</option><option>SS 3 Commercial</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select class="form-control form-select" id="create-gender">
+              <option value="">Select Gender</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" id="create-dob">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="create-phone" placeholder="+234 800 000 0000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Parent/Guardian Name</label>
+          <input type="text" class="form-control" id="create-parent" placeholder="Parent or guardian full name">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="Modal.close('create-student-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Student Modal -->
+  <div class="modal-overlay" id="view-student-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title"><i class="fas fa-eye"></i> Student Details</span>
+        <button class="modal-close" onclick="Modal.close('view-student-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div style="text-align:center;margin-bottom:1.25rem">
+        <div id="view-photo"><div class="avatar avatar-lg avatar-placeholder" style="margin:0 auto">ST</div></div>
+        <div class="fw-700 mt-2" style="font-size:1.1rem" id="view-fullname">—</div>
+        <span class="badge badge-primary mt-1" id="view-admission">—</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-item-label">Class</div><div class="info-item-value" id="view-class">—</div></div>
+        <div class="info-item"><div class="info-item-label">Gender</div><div class="info-item-value" id="view-gender">—</div></div>
+        <div class="info-item"><div class="info-item-label">Date of Birth</div><div class="info-item-value" id="view-dob">—</div></div>
+        <div class="info-item"><div class="info-item-label">Email</div><div class="info-item-value" id="view-email" style="font-size:.82rem">—</div></div>
+        <div class="info-item"><div class="info-item-label">Parent/Guardian</div><div class="info-item-value" id="view-parent">—</div></div>
+        <div class="info-item"><div class="info-item-label">Phone</div><div class="info-item-value" id="view-phone">—</div></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="Modal.close('view-student-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Student Modal -->
+  <div class="modal-overlay" id="edit-student-modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <span class="modal-title"><i class="fas fa-edit"></i> Edit Student Profile</span>
+        <button class="modal-close" onclick="Modal.close('edit-student-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="edit-student-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="edit-fullname">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Admission Number</label>
+            <input type="text" class="form-control" id="edit-admission">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class</label>
+            <select class="form-control form-select" id="edit-class">
+              <option value="">Select Class</option>
+              <optgroup label="Junior Secondary">
+                <option>JSS 1A</option><option>JSS 1B</option>
+                <option>JSS 2A</option><option>JSS 2B</option>
+                <option>JSS 3A</option><option>JSS 3B</option>
+              </optgroup>
+              <optgroup label="Senior Secondary">
+                <option>SS 1 Science</option><option>SS 1 Arts</option><option>SS 1 Commercial</option>
+                <option>SS 2 Science</option><option>SS 2 Arts</option><option>SS 2 Commercial</option>
+                <option>SS 3 Science</option><option>SS 3 Arts</option><option>SS 3 Commercial</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select class="form-control form-select" id="edit-gender">
+              <option value="">Select</option>
+              <option>Male</option><option>Female</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" id="edit-dob">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-control" id="edit-phone">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Parent/Guardian Name</label>
+          <input type="text" class="form-control" id="edit-parent">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="Modal.close('edit-student-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay" id="delete-student-modal">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <span class="modal-title" style="color:var(--danger)"><i class="fas fa-exclamation-triangle"></i> Delete Student</span>
+        <button class="modal-close" onclick="Modal.close('delete-student-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <p style="margin-bottom:1rem">Are you sure you want to delete <strong id="delete-student-name">this student</strong>? This will permanently remove their record from the database. <strong>This action cannot be undone.</strong></p>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="Modal.close('delete-student-modal')">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-delete-btn"><i class="fas fa-trash"></i> Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal -->
+  <div class="modal-overlay" id="reset-password-modal">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <span class="modal-title"><i class="fas fa-key"></i> Reset Password</span>
+        <button class="modal-close" onclick="Modal.close('reset-password-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <p style="margin-bottom:1rem">Send a password reset email to this student. They will receive a link to set a new password.</p>
+      <form id="reset-password-form">
+        <div class="form-group">
+          <label class="form-label">Student Email</label>
+          <input type="email" class="form-control" id="reset-student-email" readonly>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="Modal.close('reset-password-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-key"></i> Send Reset Email</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="portal-layout">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar admin-sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">D</div>
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Drexora Admin</div>
+          <div class="sidebar-brand-tagline">Control Panel</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Dashboard</div>
+        <a class="nav-link" data-page="index.html" href="index.html"><i class="fas fa-chart-pie nav-icon"></i> Overview</a>
+        <div class="nav-section-label" style="margin-top:.5rem">Management</div>
+        <a class="nav-link active" data-page="students.html" href="students.html"><i class="fas fa-users nav-icon"></i> Students</a>
+        <a class="nav-link" data-page="results.html" href="results.html"><i class="fas fa-chart-bar nav-icon"></i> Results</a>
+        <a class="nav-link" data-page="announcements.html" href="announcements.html"><i class="fas fa-bullhorn nav-icon"></i> Announcements</a>
+        <div class="nav-section-label" style="margin-top:.5rem">Account</div>
+        <a class="nav-link" data-logout href="#" style="color:#fca5a5"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-pill-avatar" id="sidebar-user-photo">A</div>
+          <div class="user-pill-info">
+            <div class="user-pill-name" id="sidebar-user-name">Administrator</div>
+            <div class="user-pill-role" id="sidebar-user-role">Administrator</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+          <span class="topbar-title">Manage Students</span>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" data-theme-toggle><i class="fas fa-moon theme-icon"></i></button>
+          <button class="btn btn-primary btn-sm" id="add-student-btn">
+            <i class="fas fa-user-plus"></i> Add Student
+          </button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="admin-page-header">
+          <h1><i class="fas fa-users" style="color:var(--gold-500)"></i> Student Management</h1>
+          <p>Create, view, edit, and manage all student accounts and profiles.</p>
+        </div>
+
+        <!-- Search + Filter -->
+        <div class="card mb-3">
+          <div class="flex-between" style="flex-wrap:wrap;gap:1rem">
+            <div class="search-bar" style="flex:1;min-width:200px;max-width:400px">
+              <i class="fas fa-search"></i>
+              <input type="text" id="student-search" placeholder="Search by name, admission no, or class…">
+            </div>
+            <div style="display:flex;align-items:center;gap:.5rem">
+              <span class="text-muted" style="font-size:.85rem" id="student-count">Loading…</span>
+              <button class="btn btn-sm btn-outline" onclick="loadStudents()">
+                <i class="fas fa-sync"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Full Name</th>
+                  <th>Admission No</th>
+                  <th>Class</th>
+                  <th>Gender</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th class="actions-cell">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="students-tbody">
+                <tr><td colspan="8"><div class="skeleton" style="height:40px"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/admin-students.js"></script>
+  <script>
+    // Password toggle
+    document.querySelectorAll('.toggle-pass').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const inp = btn.closest('.input-group').querySelector('input');
+        if(!inp) return;
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        btn.innerHTML = inp.type === 'text' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+      });
+    });
+  </script>
+</body>
+</html>

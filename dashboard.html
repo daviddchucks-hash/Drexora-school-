@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard — Drexora School Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
+
+  <div class="portal-layout">
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">D</div>
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Drexora School</div>
+          <div class="sidebar-brand-tagline">Student Portal</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main Menu</div>
+        <a class="nav-link active" data-page="dashboard.html" href="dashboard.html">
+          <i class="fas fa-th-large nav-icon"></i> Dashboard
+        </a>
+        <a class="nav-link" data-page="results.html" href="results.html">
+          <i class="fas fa-chart-bar nav-icon"></i> My Results
+        </a>
+        <a class="nav-link" data-page="notifications.html" href="notifications.html">
+          <i class="fas fa-bell nav-icon"></i> Announcements
+        </a>
+        <div class="nav-section-label" style="margin-top:.5rem">Account</div>
+        <a class="nav-link" data-page="profile.html" href="profile.html">
+          <i class="fas fa-user-circle nav-icon"></i> My Profile
+        </a>
+        <a class="nav-link" data-logout="student" href="#" style="color:#fca5a5">
+          <i class="fas fa-sign-out-alt nav-icon"></i> Logout
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-pill" onclick="window.location.href='profile.html'">
+          <div class="user-pill-avatar" id="sidebar-user-photo"></div>
+          <div class="user-pill-info">
+            <div class="user-pill-name" id="sidebar-user-name">Loading…</div>
+            <div class="user-pill-role" id="sidebar-user-role">Student</div>
+          </div>
+          <i class="fas fa-chevron-right user-pill-arrow"></i>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+            <i class="fas fa-bars"></i>
+          </button>
+          <span class="topbar-title" id="topbar-title">Dashboard</span>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" data-theme-toggle title="Toggle theme">
+            <i class="fas fa-moon theme-icon"></i>
+          </button>
+          <button class="topbar-btn" onclick="window.location.href='notifications.html'" title="Announcements">
+            <i class="fas fa-bell"></i>
+            <span class="topbar-notif-dot d-none" id="notif-dot"></span>
+          </button>
+          <button class="topbar-btn" onclick="window.location.href='profile.html'" title="Profile">
+            <i class="fas fa-user-circle"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content">
+        <!-- Welcome + profile incomplete warning -->
+        <div class="d-none" id="profile-incomplete">
+          <div class="card" style="border-left:4px solid var(--warning);margin-bottom:1.5rem">
+            <div class="flex gap-2" style="align-items:center">
+              <i class="fas fa-exclamation-triangle" style="color:var(--warning);font-size:1.5rem"></i>
+              <div>
+                <div class="fw-700">Profile Not Set Up</div>
+                <p style="margin:0;font-size:.85rem">Your profile has not been configured yet. Please contact the school administrator to complete your registration.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 id="topbar-greeting">Good morning, Student!</h1>
+          <p>Here's your academic overview for today.</p>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="grid-4 mb-3">
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-blue"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-avg">—</div>
+              <div class="stat-label">Average Score</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-gold"><i class="fas fa-book-open"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-subjects">—</div>
+              <div class="stat-label">Subjects</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-green"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-session" style="font-size:1rem">—</div>
+              <div class="stat-label">Current Session</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stat-icon-red"><i class="fas fa-bell"></i></div>
+            <div class="stat-info">
+              <div class="stat-value">Live</div>
+              <div class="stat-label">Announcements</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Card + Notifications -->
+        <div class="grid-2 mb-3">
+          <!-- Profile Card -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-id-card"></i> My Profile</span>
+              <a href="profile.html" class="btn btn-sm btn-outline"><i class="fas fa-edit"></i> Edit</a>
+            </div>
+            <!-- Photo + Name -->
+            <div style="display:flex;align-items:center;gap:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem">
+              <div id="profile-photo">
+                <div class="avatar avatar-lg avatar-placeholder">ST</div>
+              </div>
+              <div>
+                <div class="fw-700" style="font-size:1.1rem" id="profile-fullname">—</div>
+                <div class="text-muted" style="font-size:.85rem" id="profile-class">—</div>
+                <div style="margin-top:.4rem">
+                  <span class="badge badge-primary"><i class="fas fa-id-badge"></i> <span id="profile-admission">—</span></span>
+                </div>
+              </div>
+            </div>
+            <!-- Info Grid -->
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-venus-mars"></i> Gender</div>
+                <div class="info-item-value" id="profile-gender">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-birthday-cake"></i> Date of Birth</div>
+                <div class="info-item-value" id="profile-dob">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-envelope"></i> Email</div>
+                <div class="info-item-value" id="profile-email" style="font-size:.85rem">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-user-friends"></i> Parent/Guardian</div>
+                <div class="info-item-value" id="profile-parent">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-item-label"><i class="fas fa-phone"></i> Phone</div>
+                <div class="info-item-value" id="profile-phone">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Notifications -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title"><i class="fas fa-bell"></i> Recent Announcements</span>
+              <a href="notifications.html" class="btn btn-sm btn-outline">View All</a>
+            </div>
+            <div id="recent-notifications">
+              <div class="skeleton" style="height:72px;margin-bottom:.75rem;border-radius:var(--radius-sm)"></div>
+              <div class="skeleton" style="height:72px;margin-bottom:.75rem;border-radius:var(--radius-sm)"></div>
+              <div class="skeleton" style="height:72px;border-radius:var(--radius-sm)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Results -->
+        <div class="card">
+          <div id="recent-results">
+            <div class="skeleton" style="height:200px;border-radius:var(--radius-sm)"></div>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="grid-3 mt-3">
+          <a href="results.html" class="card" style="text-decoration:none;display:flex;align-items:center;gap:1rem;padding:1.25rem">
+            <div class="stat-icon stat-icon-blue" style="flex-shrink:0"><i class="fas fa-chart-bar"></i></div>
+            <div>
+              <div class="fw-700">View Full Results</div>
+              <div class="text-muted" style="font-size:.8rem">All sessions &amp; terms</div>
+            </div>
+            <i class="fas fa-arrow-right ml-auto" style="margin-left:auto;color:var(--text-muted)"></i>
+          </a>
+          <a href="notifications.html" class="card" style="text-decoration:none;display:flex;align-items:center;gap:1rem;padding:1.25rem">
+            <div class="stat-icon stat-icon-gold" style="flex-shrink:0"><i class="fas fa-bullhorn"></i></div>
+            <div>
+              <div class="fw-700">Announcements</div>
+              <div class="text-muted" style="font-size:.8rem">School updates</div>
+            </div>
+            <i class="fas fa-arrow-right ml-auto" style="margin-left:auto;color:var(--text-muted)"></i>
+          </a>
+          <a href="profile.html" class="card" style="text-decoration:none;display:flex;align-items:center;gap:1rem;padding:1.25rem">
+            <div class="stat-icon stat-icon-green" style="flex-shrink:0"><i class="fas fa-user-cog"></i></div>
+            <div>
+              <div class="fw-700">My Profile</div>
+              <div class="text-muted" style="font-size:.8rem">Edit &amp; manage</div>
+            </div>
+            <i class="fas fa-arrow-right ml-auto" style="margin-left:auto;color:var(--text-muted)"></i>
+          </a>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
