@@ -34,7 +34,27 @@ async function loadStudents(searchFilter = '') {
   tbody.innerHTML = '<tr><td colspan="9"><div class="skeleton" style="height:36px"></div></td></tr>';
 
   try {
-    const snap = await db.ref('students').get();
+    let snap;
+    try {
+      snap = await db.ref('students').get();
+    } catch (permErr) {
+      // Most likely cause: Firebase DB rules don't allow admin to read all students.
+      // Fix: go to Firebase Console → Realtime Database → Rules and deploy database.rules.json
+      console.error('Permission error reading students:', permErr);
+      tbody.innerHTML = `<tr><td colspan="9">
+        <div class="empty-state" style="padding:2rem;color:var(--danger)">
+          <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:var(--danger)"></i>
+          <h3 style="color:var(--danger)">Database Permission Denied</h3>
+          <p style="max-width:480px;margin:0 auto">
+            The admin account does not have permission to read student records.<br>
+            <strong>Fix:</strong> In the Firebase Console → Realtime Database → Rules,
+            paste the contents of <code>database.rules.json</code> from this project and publish.
+          </p>
+        </div></td></tr>`;
+      if (countEl) countEl.textContent = 'Permission error';
+      return;
+    }
+
     allStudents = [];
     if (snap.exists()) {
       snap.forEach(c => allStudents.push({ uid: c.key, ...c.val() }));

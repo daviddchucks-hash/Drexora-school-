@@ -166,14 +166,23 @@ function initRegisterForm() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account…';
     Spinner.show();
 
+    let createdUser = null;
     try {
-      // Create Firebase Auth account
+      // Step 1: Create Firebase Auth account
       const cred = await auth.createUserWithEmailAndPassword(email, password);
-      const user = cred.user;
+      createdUser = cred.user;
+    } catch (authErr) {
+      Spinner.hide();
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-user-plus"></i> Create My Account';
+      showError(getRegError(authErr.code));
+      return;
+    }
 
-      // Save profile to Realtime Database
+    try {
+      // Step 2: Save profile to Realtime Database
       // Fields saved at registration are permanently locked for student editing
-      await db.ref(`students/${user.uid}/profile`).set({
+      await db.ref(`students/${createdUser.uid}/profile`).set({
         fullname,
         dob,
         email,
@@ -193,11 +202,19 @@ function initRegisterForm() {
       Spinner.hide();
       Toast.success('Account created successfully! Redirecting to your portal…');
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
-    } catch (err) {
+    } catch (dbErr) {
+      // Auth account was created but profile save failed.
+      // Most likely cause: Firebase DB security rules deny writes.
+      // Fix: update rules in Firebase Console → Realtime Database → Rules
+      console.error('DB write failed after account creation:', dbErr);
       Spinner.hide();
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-user-plus"></i> Create My Account';
-      showError(getRegError(err.code));
+      if (dbErr.code === 'PERMISSION_DENIED' || (dbErr.message && dbErr.message.includes('PERMISSION_DENIED'))) {
+        showError('Account created but profile could not be saved — database rules are blocking writes. Please contact the school administrator.');
+      } else {
+        showError('Account created but profile save failed. Please try logging in and updating your profile, or contact the administrator.');
+      }
     }
   });
 }
