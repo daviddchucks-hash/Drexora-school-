@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     adminUser = user;
     SidebarManager.init();
     updateAdminSidebar(user);
-    loadStudentDropdown();
+    await loadAllStudents();
+    initClassFilters();
     initResultsForm();
     initViewResults();
     initLogout();
@@ -21,31 +22,80 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-/* ---------- Load Students into Dropdown ---------- */
-async function loadStudentDropdown() {
-  const select = document.getElementById('result-student-select');
-  if (!select) return;
+/* ---------- Load All Students ---------- */
+async function loadAllStudents() {
   try {
     const snap = await db.ref('students').get();
     allStudents = [];
     if (snap.exists()) {
       snap.forEach(c => allStudents.push({ uid: c.key, ...c.val() }));
     }
-    select.innerHTML = `<option value="">— Select Student —</option>` +
-      allStudents.map(s => {
-        const p = s.profile || {};
-        return `<option value="${s.uid}">${escapeHtml(p.fullname || s.uid)} (${escapeHtml(p.admissionNo || '')})</option>`;
-      }).join('');
-
-    // Also populate view dropdown
-    const viewSelect = document.getElementById('view-student-select');
-    if (viewSelect) {
-      viewSelect.innerHTML = select.innerHTML;
-      viewSelect.addEventListener('change', () => loadStudentResults(viewSelect.value));
-    }
   } catch (err) {
-    console.error('Student dropdown error:', err);
+    console.error('Load students error:', err);
   }
+}
+
+/* ---------- Class Filters ---------- */
+function initClassFilters() {
+  // Upload tab class filter
+  const uploadClassFilter = document.getElementById('upload-class-filter');
+  if (uploadClassFilter) {
+    uploadClassFilter.addEventListener('change', () => {
+      const cls = uploadClassFilter.value;
+      const step2 = document.getElementById('upload-step2');
+      if (!cls) {
+        if (step2) step2.style.display = 'none';
+        return;
+      }
+      if (step2) step2.style.display = '';
+      populateStudentDropdown('result-student-select', cls);
+    });
+  }
+
+  // View tab class filter
+  const viewClassFilter = document.getElementById('view-class-filter');
+  if (viewClassFilter) {
+    viewClassFilter.addEventListener('change', () => {
+      const cls = viewClassFilter.value;
+      populateStudentDropdown('view-student-select', cls);
+      // Clear results when class changes
+      const container = document.getElementById('view-results-container');
+      if (container) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h3>Select a Student</h3><p>Choose a student above to view and manage their results.</p></div>`;
+      }
+    });
+  }
+
+  // View tab student selection
+  const viewSelect = document.getElementById('view-student-select');
+  if (viewSelect) {
+    viewSelect.addEventListener('change', () => {
+      if (viewSelect.value) loadStudentResults(viewSelect.value);
+    });
+  }
+}
+
+/* ---------- Populate Student Dropdown by Class ---------- */
+function populateStudentDropdown(selectId, classFilter) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  const filtered = classFilter
+    ? allStudents.filter(s => (s.profile?.class || '') === classFilter)
+    : allStudents;
+
+  if (!filtered.length) {
+    select.innerHTML = `<option value="">— No students in ${escapeHtml(classFilter || 'selected class')} —</option>`;
+    return;
+  }
+
+  select.innerHTML = `<option value="">— Select Student —</option>` +
+    filtered.map(s => {
+      const p = s.profile || {};
+      const name = p.fullname || s.uid;
+      const adm  = p.admissionNo ? ` (${p.admissionNo})` : '';
+      return `<option value="${escapeHtml(s.uid)}">${escapeHtml(name)}${escapeHtml(adm)}</option>`;
+    }).join('');
 }
 
 /* ---------- Add Subject Row ---------- */
@@ -64,10 +114,10 @@ function addSubjectRow(subjectName = '', ca = '', exam = '', remark = '') {
     <button type="button" class="btn btn-sm btn-danger btn-icon" onclick="removeSubjectRow(this)"><i class="fas fa-times"></i></button>`;
 
   // Auto-calculate total
-  const caInput   = div.querySelector('.subj-ca');
-  const examInput = div.querySelector('.subj-exam');
+  const caInput    = div.querySelector('.subj-ca');
+  const examInput  = div.querySelector('.subj-exam');
   const totalInput = div.querySelector('.subj-total');
-  const calcTotal = () => {
+  const calcTotal  = () => {
     const c = parseFloat(caInput.value) || 0;
     const e = parseFloat(examInput.value) || 0;
     totalInput.value = (c + e).toFixed(1);
@@ -84,6 +134,24 @@ function removeSubjectRow(btn) {
   btn.closest('.subject-entry').remove();
 }
 
+/* ---------- Get Default Subjects by Class ---------- */
+function getDefaultSubjects(cls) {
+  if (!cls) return ['English Language', 'Mathematics', 'Basic Science', 'Social Studies', 'Civic Education'];
+  if (cls.startsWith('JSS')) {
+    return ['English Language', 'Mathematics', 'Basic Science', 'Social Studies', 'Civic Education', 'Basic Technology', 'Home Economics', 'Agricultural Science', 'Computer Studies'];
+  }
+  if (cls.includes('Science')) {
+    return ['English Language', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'Further Mathematics'];
+  }
+  if (cls.includes('Arts')) {
+    return ['English Language', 'Mathematics', 'Literature in English', 'Government', 'Christian/Islamic Religious Studies', 'Economics'];
+  }
+  if (cls.includes('Commercial')) {
+    return ['English Language', 'Mathematics', 'Commerce', 'Economics', 'Financial Accounting', 'Office Practice', 'Computer Studies'];
+  }
+  return ['English Language', 'Mathematics', 'Basic Science', 'Social Studies', 'Civic Education'];
+}
+
 /* ---------- Results Form ---------- */
 function initResultsForm() {
   const form = document.getElementById('upload-results-form');
@@ -93,8 +161,41 @@ function initResultsForm() {
   const addBtn = document.getElementById('add-subject-btn');
   if (addBtn) {
     addBtn.addEventListener('click', () => addSubjectRow());
-    // Add default rows
-    ['English Language','Mathematics','Basic Science','Social Studies','Civic Education'].forEach(s => addSubjectRow(s));
+  }
+
+  // When a student is selected in upload tab, pre-populate subjects from their profile
+  const studentSelect = document.getElementById('result-student-select');
+  if (studentSelect) {
+    studentSelect.addEventListener('change', () => {
+      const uid = studentSelect.value;
+      const student = allStudents.find(s => s.uid === uid);
+      const container = document.getElementById('subjects-container');
+      if (!container) return;
+
+      // Get their subjects from profile or fall back to class defaults
+      let subjects = [];
+      if (student?.profile?.subjects && Array.isArray(student.profile.subjects)) {
+        subjects = student.profile.subjects;
+      } else {
+        const cls = document.getElementById('upload-class-filter')?.value || '';
+        subjects = getDefaultSubjects(cls);
+      }
+
+      container.innerHTML = '';
+      subjects.forEach(s => addSubjectRow(s));
+    });
+  }
+
+  // Reset button
+  const resetBtn = document.getElementById('reset-upload-form');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      form.reset();
+      const container = document.getElementById('subjects-container');
+      if (container) container.innerHTML = '';
+      const step2 = document.getElementById('upload-step2');
+      if (step2) step2.style.display = 'none';
+    });
   }
 
   form.addEventListener('submit', async (e) => {
@@ -122,9 +223,9 @@ function initResultsForm() {
     });
     if (!valid) { Toast.warning('All subjects must have a name.'); return; }
 
-    const position       = parseInt(document.getElementById('result-position')?.value) || null;
-    const nextTermBegins = document.getElementById('result-next-term')?.value.trim() || '';
-    const teacherComment = document.getElementById('result-teacher-comment')?.value.trim() || '';
+    const position         = parseInt(document.getElementById('result-position')?.value) || null;
+    const nextTermBegins   = document.getElementById('result-next-term')?.value.trim() || '';
+    const teacherComment   = document.getElementById('result-teacher-comment')?.value.trim() || '';
     const principalComment = document.getElementById('result-principal-comment')?.value.trim() || '';
 
     const btn = form.querySelector('[type=submit]');
@@ -137,8 +238,10 @@ function initResultsForm() {
       });
       Toast.success('Results uploaded successfully!');
       form.reset();
-      document.getElementById('subjects-container').innerHTML = '';
-      ['English Language','Mathematics','Basic Science','Social Studies','Civic Education'].forEach(s => addSubjectRow(s));
+      const container = document.getElementById('subjects-container');
+      if (container) container.innerHTML = '';
+      const step2 = document.getElementById('upload-step2');
+      if (step2) step2.style.display = 'none';
     } catch (err) {
       Toast.error('Failed to upload results.');
       console.error(err);
@@ -151,8 +254,7 @@ function initResultsForm() {
 
 /* ---------- View/Edit Results ---------- */
 function initViewResults() {
-  const viewForm = document.getElementById('view-results-form');
-  if (!viewForm) return;
+  // Handled via initClassFilters -> viewSelect change event
 }
 
 async function loadStudentResults(uid) {
@@ -171,10 +273,10 @@ async function loadStudentResults(uid) {
     sessions.forEach(session => {
       const terms = Object.keys(data[session]).sort();
       terms.forEach(term => {
-        const tData = data[session][term];
+        const tData    = data[session][term];
         const subjects = tData.subjects || tData;
-        const meta = tData.meta || {};
-        const rows = Object.entries(subjects).filter(([k]) => k !== 'meta').map(([subj, s]) => {
+        const meta     = tData.meta || {};
+        const rows     = Object.entries(subjects).filter(([k]) => k !== 'meta').map(([subj, s]) => {
           const total = parseFloat(s.total || s.score || 0);
           return `
             <tr>
@@ -184,7 +286,7 @@ async function loadStudentResults(uid) {
               <td class="fw-700">${total || '—'}</td>
               <td><span class="badge ${Format.gradeColor(total)}">${Format.grade(total)}</span></td>
               <td>
-                <button class="btn btn-sm btn-danger btn-icon" onclick="deleteResult('${uid}','${escapeHtml(session)}','${escapeHtml(term)}','${escapeHtml(subj)}')">
+                <button class="btn btn-sm btn-danger btn-icon" onclick="deleteResult('${escapeHtml(uid)}','${escapeHtml(session)}','${escapeHtml(term)}','${escapeHtml(subj)}')">
                   <i class="fas fa-trash"></i>
                 </button>
               </td>
@@ -196,7 +298,7 @@ async function loadStudentResults(uid) {
               <span class="card-title">${escapeHtml(session)} — ${escapeHtml(term)}</span>
               <div class="flex gap-1">
                 <span class="badge badge-primary">${Object.keys(subjects).filter(k=>k!=='meta').length} subjects</span>
-                <button class="btn btn-sm btn-danger" onclick="deleteTerm('${uid}','${escapeHtml(session)}','${escapeHtml(term)}')">
+                <button class="btn btn-sm btn-danger" onclick="deleteTerm('${escapeHtml(uid)}','${escapeHtml(session)}','${escapeHtml(term)}')">
                   <i class="fas fa-trash"></i> Delete Term
                 </button>
               </div>

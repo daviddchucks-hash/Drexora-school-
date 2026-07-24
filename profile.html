@@ -13,12 +13,16 @@
   <div id="toast-container"></div>
   <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
 
-  <!-- Edit Profile Modal -->
+  <!-- Edit Profile Modal — only phone & parent editable -->
   <div class="modal-overlay" id="edit-profile-modal">
     <div class="modal">
       <div class="modal-header">
         <span class="modal-title"><i class="fas fa-edit"></i> Edit Profile</span>
         <button class="modal-close" onclick="Modal.close('edit-profile-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;border-radius:var(--radius-sm);padding:.75rem 1rem;font-size:.83rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:.6rem">
+        <i class="fas fa-lock" style="margin-top:2px;flex-shrink:0"></i>
+        <span>For security reasons, your <strong>name, class, email, date of birth, and subjects</strong> are locked and cannot be changed. Only phone and parent/guardian details are editable here. Contact the school administrator for other changes.</span>
       </div>
       <form id="edit-profile-form">
         <div class="form-group">
@@ -34,7 +38,6 @@
             <i class="fas fa-user-friends input-icon"></i>
             <input type="text" class="form-control" id="edit-parent" placeholder="Parent or guardian name">
           </div>
-          <span class="form-hint">Only these fields are editable. Contact admin for other changes.</span>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-ghost" onclick="Modal.close('edit-profile-modal')">Cancel</button>
@@ -136,6 +139,12 @@
           <p>View and manage your student information.</p>
         </div>
 
+        <!-- Lock Notice -->
+        <div id="lock-notice" style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;border-radius:var(--radius-sm);padding:.8rem 1rem;font-size:.83rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem">
+          <i class="fas fa-lock" style="flex-shrink:0;font-size:1rem"></i>
+          <span>Your <strong>name, class, email, date of birth, and subjects</strong> are locked for security. Only your <strong>phone number</strong> and <strong>parent/guardian</strong> details can be updated. Contact the school admin for any other changes.</span>
+        </div>
+
         <div class="grid-2">
           <!-- Profile Card -->
           <div class="card">
@@ -163,11 +172,11 @@
                 <div class="info-item-value" id="disp-gender">—</div>
               </div>
               <div class="info-item">
-                <div class="info-item-label"><i class="fas fa-birthday-cake"></i> Date of Birth</div>
+                <div class="info-item-label"><i class="fas fa-birthday-cake"></i> Date of Birth <i class="fas fa-lock" style="font-size:.65rem;color:var(--text-muted);margin-left:.3rem" title="Locked"></i></div>
                 <div class="info-item-value" id="disp-dob">—</div>
               </div>
               <div class="info-item">
-                <div class="info-item-label"><i class="fas fa-envelope"></i> Email</div>
+                <div class="info-item-label"><i class="fas fa-envelope"></i> Email <i class="fas fa-lock" style="font-size:.65rem;color:var(--text-muted);margin-left:.3rem" title="Locked"></i></div>
                 <div class="info-item-value" id="disp-email" style="font-size:.85rem">—</div>
               </div>
               <div class="info-item">
@@ -178,6 +187,14 @@
                 <div class="info-item-label"><i class="fas fa-phone"></i> Phone</div>
                 <div class="info-item-value" id="disp-phone">—</div>
               </div>
+            </div>
+
+            <!-- Subjects Section -->
+            <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+              <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:.75rem">
+                <i class="fas fa-book"></i> Subject Combination <i class="fas fa-lock" style="font-size:.65rem;margin-left:.3rem" title="Locked — set at registration"></i>
+              </div>
+              <div id="disp-subjects" style="line-height:1.8">—</div>
             </div>
           </div>
 
@@ -227,7 +244,7 @@
                 <div class="fw-700">Keep Your Info Updated</div>
               </div>
               <p style="color:rgba(255,255,255,.75);font-size:.83rem;margin:0">
-                Ensure your phone number and parent/guardian details are always current so the school can reach you easily.
+                Ensure your phone number and parent/guardian details are always current so the school can reach you easily. For any other changes, contact your class teacher or the school administrator.
               </p>
             </div>
           </div>

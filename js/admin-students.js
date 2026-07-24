@@ -4,6 +4,7 @@
 
 let adminUser = null;
 let allStudents = [];
+let activeClassFilter = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCreateStudentForm();
     initPhotoUpload();
     initSearch();
+    initClassFilter();
     initDeleteModal();
     initResetPasswordModal();
     initLogout();
@@ -24,12 +26,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 /* ---------- Load Students ---------- */
-async function loadStudents(filter = '') {
-  const tbody = document.getElementById('students-tbody');
+async function loadStudents(searchFilter = '') {
+  const tbody   = document.getElementById('students-tbody');
   const countEl = document.getElementById('student-count');
   if (!tbody) return;
 
-  tbody.innerHTML = '<tr><td colspan="8"><div class="skeleton" style="height:36px"></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9"><div class="skeleton" style="height:36px"></div></td></tr>';
 
   try {
     const snap = await db.ref('students').get();
@@ -38,29 +40,40 @@ async function loadStudents(filter = '') {
       snap.forEach(c => allStudents.push({ uid: c.key, ...c.val() }));
     }
 
-    const filtered = filter
-      ? allStudents.filter(s => {
-          const p = s.profile || {};
-          return (p.fullname||'').toLowerCase().includes(filter) ||
-                 (p.admissionNo||'').toLowerCase().includes(filter) ||
-                 (p.class||'').toLowerCase().includes(filter);
-        })
-      : allStudents;
+    let filtered = allStudents;
 
-    if (countEl) countEl.textContent = `${filtered.length} students`;
+    // Class filter
+    if (activeClassFilter) {
+      filtered = filtered.filter(s => (s.profile?.class || '') === activeClassFilter);
+    }
+
+    // Search filter
+    if (searchFilter) {
+      filtered = filtered.filter(s => {
+        const p = s.profile || {};
+        return (p.fullname||'').toLowerCase().includes(searchFilter) ||
+               (p.admissionNo||'').toLowerCase().includes(searchFilter) ||
+               (p.class||'').toLowerCase().includes(searchFilter) ||
+               (p.email||'').toLowerCase().includes(searchFilter);
+      });
+    }
+
+    const label = activeClassFilter ? ` in ${activeClassFilter}` : '';
+    if (countEl) countEl.textContent = `${filtered.length} students${label}`;
 
     if (!filtered.length) {
-      tbody.innerHTML = `<tr><td colspan="8">
+      tbody.innerHTML = `<tr><td colspan="9">
         <div class="empty-state" style="padding:2rem">
           <i class="fas fa-users" style="font-size:2rem"></i>
           <h3>No Students Found</h3>
-          <p>${filter ? 'Try a different search.' : 'Click "Add Student" to register the first student.'}</p>
+          <p>${searchFilter || activeClassFilter ? 'Try a different search or class filter.' : 'Click "Add Student" to register the first student.'}</p>
         </div></td></tr>`;
       return;
     }
 
     tbody.innerHTML = filtered.map(s => {
       const p = s.profile || {};
+      const subjectsList = Array.isArray(p.subjects) ? p.subjects.join(', ') : (p.subjects || '—');
       return `
         <tr>
           <td>
@@ -71,22 +84,23 @@ async function loadStudents(filter = '') {
           </td>
           <td class="fw-700">${escapeHtml(p.fullname || '—')}</td>
           <td>${escapeHtml(p.admissionNo || '—')}</td>
-          <td>${escapeHtml(p.class || '—')}</td>
+          <td><span class="badge badge-primary">${escapeHtml(p.class || '—')}</span></td>
           <td>${escapeHtml(p.gender || '—')}</td>
           <td>${escapeHtml(p.email || '—')}</td>
           <td>${escapeHtml(p.phone || '—')}</td>
+          <td style="max-width:180px;font-size:.75rem;color:var(--text-muted)">${escapeHtml(subjectsList.length > 60 ? subjectsList.substring(0,60) + '…' : subjectsList)}</td>
           <td>
             <div class="flex" style="gap:.4rem">
-              <button class="btn btn-sm btn-outline" onclick="openViewStudent('${s.uid}')">
+              <button class="btn btn-sm btn-outline" title="View" onclick="openViewStudent('${s.uid}')">
                 <i class="fas fa-eye"></i>
               </button>
-              <button class="btn btn-sm btn-primary" onclick="openEditStudent('${s.uid}')">
+              <button class="btn btn-sm btn-primary" title="Edit" onclick="openEditStudent('${s.uid}')">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="btn btn-sm btn-ghost" onclick="openResetPassword('${s.uid}','${escapeHtml(p.email||'')}')">
+              <button class="btn btn-sm btn-ghost" title="Reset Password" onclick="openResetPassword('${s.uid}','${escapeHtml(p.email||'')}')">
                 <i class="fas fa-key"></i>
               </button>
-              <button class="btn btn-sm btn-danger" onclick="openDeleteStudent('${s.uid}','${escapeHtml(p.fullname||'')}')">
+              <button class="btn btn-sm btn-danger" title="Delete" onclick="openDeleteStudent('${s.uid}','${escapeHtml(p.fullname||'')}')">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
@@ -95,8 +109,19 @@ async function loadStudents(filter = '') {
     }).join('');
   } catch (err) {
     console.error('Load students error:', err);
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger">Failed to load students.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center text-danger">Failed to load students.</td></tr>';
   }
+}
+
+/* ---------- Class Filter ---------- */
+function initClassFilter() {
+  const classFilter = document.getElementById('class-filter-select');
+  if (!classFilter) return;
+  classFilter.addEventListener('change', () => {
+    activeClassFilter = classFilter.value;
+    const searchInput = document.getElementById('student-search');
+    loadStudents(searchInput ? searchInput.value.trim().toLowerCase() : '');
+  });
 }
 
 /* ---------- Create Student ---------- */
@@ -127,6 +152,10 @@ function initCreateStudentForm() {
     const dob         = v('create-dob');
     const parent      = v('create-parent');
     const phone       = v('create-phone');
+
+    // Collect subjects from checkboxes/multiselect
+    const subjectCheckboxes = form.querySelectorAll('input[name="create-subjects"]:checked');
+    const subjects = Array.from(subjectCheckboxes).map(cb => cb.value);
 
     if (!fullname || !email || !password || !cls) {
       Toast.warning('Please fill all required fields.');
@@ -162,6 +191,7 @@ function initCreateStudentForm() {
       // Save profile to Realtime Database
       await db.ref(`students/${uid}/profile`).set({
         fullname, admissionNo, email, class: cls, gender, dob, parent, phone,
+        subjects: subjects.length ? subjects : [],
         photo: photoUrl, createdAt: Date.now()
       });
 
@@ -198,6 +228,14 @@ function openViewStudent(uid) {
   }
   const fields = { 'view-fullname':p.fullname,'view-admission':p.admissionNo,'view-class':p.class,'view-gender':p.gender,'view-dob':p.dob,'view-email':p.email,'view-parent':p.parent,'view-phone':p.phone };
   Object.entries(fields).forEach(([id, val]) => { const el = document.getElementById(id); if(el) el.textContent = val||'—'; });
+
+  // Show subjects
+  const subjEl = document.getElementById('view-subjects');
+  if (subjEl) {
+    const subjects = Array.isArray(p.subjects) ? p.subjects : [];
+    subjEl.textContent = subjects.length ? subjects.join(', ') : '—';
+  }
+
   Modal.open('view-student-modal');
 }
 

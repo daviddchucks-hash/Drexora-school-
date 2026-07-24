@@ -33,6 +33,10 @@
     .btn-google:hover{border-color:var(--primary);background:var(--bg)}
     .strength-bar{height:4px;border-radius:2px;background:var(--border);margin-top:.4rem;overflow:hidden}
     .strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s;width:0}
+    .register-cta{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:1rem;text-align:center;margin-top:1.25rem}
+    .register-cta p{color:rgba(255,255,255,.65);font-size:.84rem;margin-bottom:.6rem}
+    .register-cta a{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.12);color:#fff;font-weight:700;font-size:.85rem;padding:.55rem 1.25rem;border-radius:999px;transition:background .2s;text-decoration:none}
+    .register-cta a:hover{background:rgba(255,255,255,.2)}
     [data-theme="dark"] .login-card{background:var(--surface);border-color:var(--border)}
   </style>
 </head>
@@ -92,6 +96,12 @@
           <i class="fas fa-sign-in-alt"></i> Sign In to Portal
         </button>
       </form>
+
+      <div class="login-divider"><span>NEW STUDENT?</span></div>
+
+      <a href="student-register.html" class="btn btn-secondary btn-block" style="justify-content:center;gap:.6rem">
+        <i class="fas fa-user-plus"></i> Create a New Account
+      </a>
 
       <div class="login-divider"><span>NEED HELP?</span></div>
 

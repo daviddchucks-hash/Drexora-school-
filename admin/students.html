@@ -127,6 +127,10 @@
         <div class="info-item"><div class="info-item-label">Parent/Guardian</div><div class="info-item-value" id="view-parent">—</div></div>
         <div class="info-item"><div class="info-item-label">Phone</div><div class="info-item-value" id="view-phone">—</div></div>
       </div>
+      <div class="info-item" style="margin-top:.75rem">
+        <div class="info-item-label"><i class="fas fa-book"></i> Subjects</div>
+        <div class="info-item-value" id="view-subjects" style="font-size:.82rem;color:var(--text-muted)">—</div>
+      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-ghost" onclick="Modal.close('view-student-modal')">Close</button>
       </div>
@@ -285,17 +289,37 @@
       <main class="page-content">
         <div class="admin-page-header">
           <h1><i class="fas fa-users" style="color:var(--gold-500)"></i> Student Management</h1>
-          <p>Create, view, edit, and manage all student accounts and profiles.</p>
+          <p>Create, view, edit, and manage all student accounts and profiles. Filter by class to find students quickly.</p>
         </div>
 
         <!-- Search + Filter -->
         <div class="card mb-3">
-          <div class="flex-between" style="flex-wrap:wrap;gap:1rem">
-            <div class="search-bar" style="flex:1;min-width:200px;max-width:400px">
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center">
+            <!-- Search -->
+            <div class="search-bar" style="flex:1;min-width:200px;max-width:340px">
               <i class="fas fa-search"></i>
-              <input type="text" id="student-search" placeholder="Search by name, admission no, or class…">
+              <input type="text" id="student-search" placeholder="Search by name, admission no, email…">
             </div>
-            <div style="display:flex;align-items:center;gap:.5rem">
+
+            <!-- Class Filter -->
+            <div style="display:flex;align-items:center;gap:.5rem;flex:1;min-width:200px;max-width:280px">
+              <i class="fas fa-filter" style="color:var(--primary);flex-shrink:0"></i>
+              <select class="form-control form-select" id="class-filter-select" style="margin:0">
+                <option value="">All Classes</option>
+                <optgroup label="Junior Secondary">
+                  <option>JSS 1A</option><option>JSS 1B</option>
+                  <option>JSS 2A</option><option>JSS 2B</option>
+                  <option>JSS 3A</option><option>JSS 3B</option>
+                </optgroup>
+                <optgroup label="Senior Secondary">
+                  <option>SS 1 Science</option><option>SS 1 Arts</option><option>SS 1 Commercial</option>
+                  <option>SS 2 Science</option><option>SS 2 Arts</option><option>SS 2 Commercial</option>
+                  <option>SS 3 Science</option><option>SS 3 Arts</option><option>SS 3 Commercial</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:.5rem;margin-left:auto">
               <span class="text-muted" style="font-size:.85rem" id="student-count">Loading…</span>
               <button class="btn btn-sm btn-outline" onclick="loadStudents()">
                 <i class="fas fa-sync"></i>
@@ -317,11 +341,12 @@
                   <th>Gender</th>
                   <th>Email</th>
                   <th>Phone</th>
+                  <th>Subjects</th>
                   <th class="actions-cell">Actions</th>
                 </tr>
               </thead>
               <tbody id="students-tbody">
-                <tr><td colspan="8"><div class="skeleton" style="height:40px"></div></td></tr>
+                <tr><td colspan="9"><div class="skeleton" style="height:40px"></div></td></tr>
               </tbody>
             </table>
           </div>

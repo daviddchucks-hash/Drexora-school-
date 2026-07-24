@@ -33,7 +33,7 @@ function renderProfile(user, profile) {
     }
   }
 
-  // Info fields
+  // Info fields (read-only / display)
   const fields = {
     'disp-fullname':    profile.fullname    || '—',
     'disp-admission':   profile.admissionNo || '—',
@@ -46,12 +46,33 @@ function renderProfile(user, profile) {
   };
   Object.entries(fields).forEach(([id, val]) => setEl(id, val));
 
-  // Populate edit form with editable fields
+  // Subjects (can be array or string)
+  const subjEl = document.getElementById('disp-subjects');
+  if (subjEl) {
+    const subjects = Array.isArray(profile.subjects)
+      ? profile.subjects
+      : (profile.subjects ? [profile.subjects] : []);
+    if (subjects.length) {
+      subjEl.innerHTML = subjects.map(s =>
+        `<span class="badge badge-primary" style="margin:.2rem .2rem .2rem 0">${escapeHtml(s)}</span>`
+      ).join('');
+    } else {
+      subjEl.textContent = '—';
+    }
+  }
+
+  // Populate ONLY the editable fields in the edit form
   setInput('edit-phone',  profile.phone  || '');
   setInput('edit-parent', profile.parent || '');
+
+  // Show lock notice if self-registered (locked fields)
+  const lockNotice = document.getElementById('lock-notice');
+  if (lockNotice) {
+    lockNotice.style.display = '';
+  }
 }
 
-/* ---------- Profile Edit Form ---------- */
+/* ---------- Profile Edit Form (editable: phone + parent only) ---------- */
 function initProfileEdit() {
   const form = document.getElementById('edit-profile-form');
   if (!form) return;
@@ -110,7 +131,6 @@ function initPasswordChange() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating…';
     try {
-      // Re-authenticate first
       const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, current);
       await currentUser.reauthenticateWithCredential(credential);
       await currentUser.updatePassword(newPass);
@@ -131,7 +151,6 @@ function initPasswordChange() {
     }
   });
 
-  // Open button
   document.querySelectorAll('[data-open-change-pass]').forEach(btn => {
     btn.addEventListener('click', () => Modal.open('change-password-modal'));
   });
@@ -139,7 +158,7 @@ function initPasswordChange() {
 
 /* ---------- Photo Upload ---------- */
 function initPhotoUpload() {
-  const input    = document.getElementById('photo-input');
+  const input     = document.getElementById('photo-input');
   const uploadBtn = document.getElementById('upload-photo-btn');
   if (!input || !uploadBtn) return;
 
@@ -147,19 +166,13 @@ function initPhotoUpload() {
   input.addEventListener('change', async () => {
     const file = input.files[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      Toast.error('Please select an image file.');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      Toast.error('Image must be smaller than 5MB.');
-      return;
-    }
+    if (!file.type.startsWith('image/')) { Toast.error('Please select an image file.'); return; }
+    if (file.size > 5 * 1024 * 1024)    { Toast.error('Image must be smaller than 5MB.'); return; }
     Spinner.show();
     try {
-      const ref  = storage.ref(`passports/${currentUser.uid}`);
+      const ref = storage.ref(`passports/${currentUser.uid}`);
       await ref.put(file);
-      const url  = await ref.getDownloadURL();
+      const url = await ref.getDownloadURL();
       await db.ref(`students/${currentUser.uid}/profile`).update({ photo: url });
       currentProfile.photo = url;
       const photoEl = document.getElementById('profile-photo-display');
