@@ -1,20 +1,39 @@
 {
   "rules": {
+
     "students": {
-      ".read": "root.child('admins').child(auth.uid).exists()",
+      // Admin can read/write ALL student records (full access for management)
+      ".read":  "root.child('admins').child(auth.uid).exists()",
       ".write": "root.child('admins').child(auth.uid).exists()",
+
       "$uid": {
-        ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid"
+        // Profile: students can read & write their own profile (self-registration + profile updates)
+        //          admins can also read/write (already covered by parent, but explicit for clarity)
+        "profile": {
+          ".read":  "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).exists())",
+          ".write": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).exists())"
+        },
+
+        // Results: students can VIEW their own results, but ONLY admins can upload/edit results
+        "results": {
+          ".read":  "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).exists())",
+          ".write": "root.child('admins').child(auth.uid).exists()"
+        }
       }
     },
+
     "admins": {
+      // Any authenticated user can check if a UID is an admin (needed for auth-guard checks)
       ".read":  "auth != null",
-      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+      // Only existing admins can add/remove admin records
+      ".write": "root.child('admins').child(auth.uid).exists()"
     },
+
     "announcements": {
+      // All authenticated users (students + admins) can read announcements
       ".read":  "auth != null",
-      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+      // Only admins can post or delete announcements
+      ".write": "root.child('admins').child(auth.uid).exists()"
     }
   }
 }

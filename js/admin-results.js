@@ -28,10 +28,65 @@ async function loadAllStudents() {
     const snap = await db.ref('students').get();
     allStudents = [];
     if (snap.exists()) {
-      snap.forEach(c => allStudents.push({ uid: c.key, ...c.val() }));
+      snap.forEach(c => {
+        const val = c.val();
+        // Guard: skip null/non-object entries
+        if (val && typeof val === 'object') {
+          allStudents.push({ uid: c.key, ...val });
+        }
+      });
+    }
+
+    if (!allStudents.length) {
+      // Show a notice in both dropdowns
+      ['result-student-select', 'view-student-select'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<option value="">— No students registered yet —</option>';
+      });
     }
   } catch (err) {
     console.error('Load students error:', err);
+
+    const isPermission = err.code === 'PERMISSION_DENIED' ||
+                         (err.message && err.message.includes('PERMISSION_DENIED'));
+
+    if (isPermission) {
+      Toast.error(
+        'Database permission denied. Publish database.rules.json to Firebase Console → Realtime Database → Rules.',
+        8000
+      );
+      ['result-student-select', 'view-student-select'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<option value="">— Permission denied — see instructions —</option>';
+      });
+    } else {
+      Toast.error('Failed to load students. Check your connection.');
+    }
+  }
+}
+
+/* ---------- Tab Switcher ---------- */
+function switchTab(tab) {
+  const uploadPanel = document.getElementById('panel-upload');
+  const viewPanel   = document.getElementById('panel-view');
+  const uploadTab   = document.getElementById('tab-upload');
+  const viewTab     = document.getElementById('tab-view');
+  if (!uploadPanel || !viewPanel) return;
+
+  if (tab === 'upload') {
+    uploadPanel.style.display = '';
+    viewPanel.style.display   = 'none';
+    if (uploadTab) uploadTab.style.borderBottom = '3px solid var(--primary)';
+    if (viewTab)   viewTab.style.borderBottom   = '';
+    if (uploadTab) uploadTab.style.color = 'var(--primary)';
+    if (viewTab)   viewTab.style.color   = '';
+  } else {
+    uploadPanel.style.display = 'none';
+    viewPanel.style.display   = '';
+    if (viewTab)   viewTab.style.borderBottom   = '3px solid var(--primary)';
+    if (uploadTab) uploadTab.style.borderBottom = '';
+    if (viewTab)   viewTab.style.color   = 'var(--primary)';
+    if (uploadTab) uploadTab.style.color = '';
   }
 }
 
@@ -85,7 +140,9 @@ function populateStudentDropdown(selectId, classFilter) {
     : allStudents;
 
   if (!filtered.length) {
-    select.innerHTML = `<option value="">— No students in ${escapeHtml(classFilter || 'selected class')} —</option>`;
+    select.innerHTML = classFilter
+      ? `<option value="">— No students in ${escapeHtml(classFilter)} —</option>`
+      : `<option value="">— No students registered yet —</option>`;
     return;
   }
 
@@ -243,8 +300,8 @@ function initResultsForm() {
       const step2 = document.getElementById('upload-step2');
       if (step2) step2.style.display = 'none';
     } catch (err) {
-      Toast.error('Failed to upload results.');
-      console.error(err);
+      console.error('Upload results error:', err);
+      Toast.error('Failed to upload results. ' + (err.message || ''));
     } finally {
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-upload"></i> Upload Results';
@@ -264,7 +321,7 @@ async function loadStudentResults(uid) {
   try {
     const snap = await db.ref(`students/${uid}/results`).get();
     if (!snap.exists()) {
-      container.innerHTML = `<div class="empty-state"><i class="fas fa-chart-bar"></i><h3>No Results</h3><p>No results uploaded for this student.</p></div>`;
+      container.innerHTML = `<div class="empty-state"><i class="fas fa-chart-bar"></i><h3>No Results</h3><p>No results uploaded for this student yet.</p></div>`;
       return;
     }
     const data = snap.val();
@@ -281,8 +338,8 @@ async function loadStudentResults(uid) {
           return `
             <tr>
               <td>${escapeHtml(subj)}</td>
-              <td>${s.ca || '—'}</td>
-              <td>${s.exam || '—'}</td>
+              <td>${s.ca !== undefined ? s.ca : '—'}</td>
+              <td>${s.exam !== undefined ? s.exam : '—'}</td>
               <td class="fw-700">${total || '—'}</td>
               <td><span class="badge ${Format.gradeColor(total)}">${Format.grade(total)}</span></td>
               <td>
@@ -317,10 +374,10 @@ async function loadStudentResults(uid) {
           </div>`;
       });
     });
-    container.innerHTML = html || '<p class="text-muted text-center">No results.</p>';
+    container.innerHTML = html || '<p class="text-muted text-center">No results found.</p>';
   } catch (err) {
     console.error('Load student results error:', err);
-    container.innerHTML = '<p class="text-danger text-center">Failed to load results.</p>';
+    container.innerHTML = '<p class="text-danger text-center">Failed to load results. Check your connection.</p>';
   }
 }
 
@@ -331,7 +388,10 @@ async function deleteResult(uid, session, term, subject) {
     await db.ref(`students/${uid}/results/${session}/${term}/subjects/${subject}`).remove();
     Toast.success('Subject deleted.');
     loadStudentResults(uid);
-  } catch { Toast.error('Failed to delete subject.'); }
+  } catch (err) {
+    console.error('Delete result error:', err);
+    Toast.error('Failed to delete subject.');
+  }
 }
 
 async function deleteTerm(uid, session, term) {
@@ -340,7 +400,10 @@ async function deleteTerm(uid, session, term) {
     await db.ref(`students/${uid}/results/${session}/${term}`).remove();
     Toast.success(`${session} ${term} results deleted.`);
     loadStudentResults(uid);
-  } catch { Toast.error('Failed to delete term results.'); }
+  } catch (err) {
+    console.error('Delete term error:', err);
+    Toast.error('Failed to delete term results.');
+  }
 }
 
 /* ---------- Helpers ---------- */

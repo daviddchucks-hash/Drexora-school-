@@ -34,30 +34,28 @@ async function loadStudents(searchFilter = '') {
   tbody.innerHTML = '<tr><td colspan="9"><div class="skeleton" style="height:36px"></div></td></tr>';
 
   try {
-    let snap;
-    try {
-      snap = await db.ref('students').get();
-    } catch (permErr) {
-      // Most likely cause: Firebase DB rules don't allow admin to read all students.
-      // Fix: go to Firebase Console → Realtime Database → Rules and deploy database.rules.json
-      console.error('Permission error reading students:', permErr);
-      tbody.innerHTML = `<tr><td colspan="9">
-        <div class="empty-state" style="padding:2rem;color:var(--danger)">
-          <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:var(--danger)"></i>
-          <h3 style="color:var(--danger)">Database Permission Denied</h3>
-          <p style="max-width:480px;margin:0 auto">
-            The admin account does not have permission to read student records.<br>
-            <strong>Fix:</strong> In the Firebase Console → Realtime Database → Rules,
-            paste the contents of <code>database.rules.json</code> from this project and publish.
-          </p>
-        </div></td></tr>`;
-      if (countEl) countEl.textContent = 'Permission error';
-      return;
-    }
+    const snap = await db.ref('students').get();
 
     allStudents = [];
     if (snap.exists()) {
-      snap.forEach(c => allStudents.push({ uid: c.key, ...c.val() }));
+      snap.forEach(c => {
+        const val = c.val();
+        // Guard: skip null/non-object entries
+        if (val && typeof val === 'object') {
+          allStudents.push({ uid: c.key, ...val });
+        }
+      });
+    }
+
+    if (!allStudents.length && !snap.exists()) {
+      tbody.innerHTML = `<tr><td colspan="9">
+        <div class="empty-state" style="padding:2rem">
+          <i class="fas fa-users" style="font-size:2rem"></i>
+          <h3>No Students Yet</h3>
+          <p>Click "Add Student" to register the first student.</p>
+        </div></td></tr>`;
+      if (countEl) countEl.textContent = '0 students';
+      return;
     }
 
     let filtered = allStudents;
@@ -69,17 +67,18 @@ async function loadStudents(searchFilter = '') {
 
     // Search filter
     if (searchFilter) {
+      const q = searchFilter.toLowerCase();
       filtered = filtered.filter(s => {
         const p = s.profile || {};
-        return (p.fullname||'').toLowerCase().includes(searchFilter) ||
-               (p.admissionNo||'').toLowerCase().includes(searchFilter) ||
-               (p.class||'').toLowerCase().includes(searchFilter) ||
-               (p.email||'').toLowerCase().includes(searchFilter);
+        return (p.fullname    || '').toLowerCase().includes(q) ||
+               (p.admissionNo || '').toLowerCase().includes(q) ||
+               (p.class       || '').toLowerCase().includes(q) ||
+               (p.email       || '').toLowerCase().includes(q);
       });
     }
 
     const label = activeClassFilter ? ` in ${activeClassFilter}` : '';
-    if (countEl) countEl.textContent = `${filtered.length} students${label}`;
+    if (countEl) countEl.textContent = `${filtered.length} student${filtered.length !== 1 ? 's' : ''}${label}`;
 
     if (!filtered.length) {
       tbody.innerHTML = `<tr><td colspan="9">
@@ -111,25 +110,50 @@ async function loadStudents(searchFilter = '') {
           <td style="max-width:180px;font-size:.75rem;color:var(--text-muted)">${escapeHtml(subjectsList.length > 60 ? subjectsList.substring(0,60) + '…' : subjectsList)}</td>
           <td>
             <div class="flex" style="gap:.4rem">
-              <button class="btn btn-sm btn-outline" title="View" onclick="openViewStudent('${s.uid}')">
+              <button class="btn btn-sm btn-outline" title="View" onclick="openViewStudent('${escapeHtml(s.uid)}')">
                 <i class="fas fa-eye"></i>
               </button>
-              <button class="btn btn-sm btn-primary" title="Edit" onclick="openEditStudent('${s.uid}')">
+              <button class="btn btn-sm btn-primary" title="Edit" onclick="openEditStudent('${escapeHtml(s.uid)}')">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="btn btn-sm btn-ghost" title="Reset Password" onclick="openResetPassword('${s.uid}','${escapeHtml(p.email||'')}')">
+              <button class="btn btn-sm btn-ghost" title="Reset Password" onclick="openResetPassword('${escapeHtml(s.uid)}','${escapeHtml(p.email||'')}')">
                 <i class="fas fa-key"></i>
               </button>
-              <button class="btn btn-sm btn-danger" title="Delete" onclick="openDeleteStudent('${s.uid}','${escapeHtml(p.fullname||'')}')">
+              <button class="btn btn-sm btn-danger" title="Delete" onclick="openDeleteStudent('${escapeHtml(s.uid)}','${escapeHtml(p.fullname||'')}')">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
           </td>
         </tr>`;
     }).join('');
+
   } catch (err) {
     console.error('Load students error:', err);
-    tbody.innerHTML = '<tr><td colspan="9" class="text-center text-danger">Failed to load students.</td></tr>';
+
+    // Detect Firebase permission errors
+    const isPermission = err.code === 'PERMISSION_DENIED' ||
+                         (err.message && err.message.includes('PERMISSION_DENIED'));
+
+    if (isPermission) {
+      tbody.innerHTML = `<tr><td colspan="9">
+        <div class="empty-state" style="padding:2rem;color:var(--danger)">
+          <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:var(--danger)"></i>
+          <h3 style="color:var(--danger)">Database Permission Denied</h3>
+          <p style="max-width:520px;margin:0 auto">
+            The admin account cannot read student records because the Firebase Database Rules
+            have not been published yet.<br><br>
+            <strong>Fix:</strong> Go to
+            <a href="https://console.firebase.google.com/project/drexora-school/database/rules" target="_blank" style="color:var(--primary)">
+              Firebase Console → Realtime Database → Rules
+            </a>
+            and paste the contents of <code>database.rules.json</code>, then click <strong>Publish</strong>.
+          </p>
+        </div></td></tr>`;
+      if (countEl) countEl.textContent = 'Permission error';
+    } else {
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center text-danger">Failed to load students. Check your connection and try again.</td></tr>';
+      if (countEl) countEl.textContent = 'Load error';
+    }
   }
 }
 
@@ -191,7 +215,7 @@ function initCreateStudentForm() {
     }
 
     try {
-      // Create Firebase Auth account using REST API (secondary app trick)
+      // Create Firebase Auth account using secondary app (preserves admin session)
       const secondaryApp = firebase.initializeApp(firebase.app().options, `secondary-${Date.now()}`);
       const secAuth = secondaryApp.auth();
       const cred = await secAuth.createUserWithEmailAndPassword(email, password);
@@ -208,11 +232,13 @@ function initCreateStudentForm() {
         photoUrl = await ref.getDownloadURL();
       }
 
-      // Save profile to Realtime Database
+      // Save profile to Realtime Database under students/{uid}/profile
       await db.ref(`students/${uid}/profile`).set({
         fullname, admissionNo, email, class: cls, gender, dob, parent, phone,
         subjects: subjects.length ? subjects : [],
-        photo: photoUrl, createdAt: Date.now()
+        photo: photoUrl,
+        createdAt: Date.now(),
+        registeredByAdmin: true
       });
 
       Toast.success(`Account created for ${fullname}!`);
@@ -224,6 +250,8 @@ function initCreateStudentForm() {
       console.error('Create student error:', err);
       if (err.code === 'auth/email-already-in-use') {
         Toast.error('Email is already registered.');
+      } else if (err.code === 'PERMISSION_DENIED' || (err.message && err.message.includes('PERMISSION_DENIED'))) {
+        Toast.error('Database rules not published. Go to Firebase Console → Realtime Database → Rules and publish database.rules.json.');
       } else {
         Toast.error('Failed to create account: ' + err.message);
       }
@@ -246,8 +274,20 @@ function openViewStudent(uid) {
     if (p.photo) photoEl.innerHTML = `<img src="${escapeHtml(p.photo)}" class="avatar avatar-lg" alt="">`;
     else photoEl.innerHTML = `<div class="avatar avatar-lg avatar-placeholder">${getInitials(p.fullname)}</div>`;
   }
-  const fields = { 'view-fullname':p.fullname,'view-admission':p.admissionNo,'view-class':p.class,'view-gender':p.gender,'view-dob':p.dob,'view-email':p.email,'view-parent':p.parent,'view-phone':p.phone };
-  Object.entries(fields).forEach(([id, val]) => { const el = document.getElementById(id); if(el) el.textContent = val||'—'; });
+  const fields = {
+    'view-fullname': p.fullname,
+    'view-admission': p.admissionNo,
+    'view-class': p.class,
+    'view-gender': p.gender,
+    'view-dob': p.dob,
+    'view-email': p.email,
+    'view-parent': p.parent,
+    'view-phone': p.phone
+  };
+  Object.entries(fields).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val || '—';
+  });
 
   // Show subjects
   const subjEl = document.getElementById('view-subjects');
@@ -301,6 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
       Modal.close('edit-student-modal');
       loadStudents();
     } catch (err) {
+      console.error('Edit student error:', err);
       Toast.error('Failed to update profile.');
     } finally {
       btn.disabled = false;
@@ -333,6 +374,7 @@ function initDeleteModal() {
       pendingDeleteUid = null;
       loadStudents();
     } catch (err) {
+      console.error('Delete student error:', err);
       Toast.error('Failed to delete student record.');
     } finally {
       confirmBtn.disabled = false;
@@ -363,6 +405,7 @@ function initResetPasswordModal() {
       Toast.success(`Password reset email sent to ${email}`);
       Modal.close('reset-password-modal');
     } catch (err) {
+      console.error('Reset password error:', err);
       Toast.error('Failed to send reset email.');
     } finally {
       btn.disabled = false;
