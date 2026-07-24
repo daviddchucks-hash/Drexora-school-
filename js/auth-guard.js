@@ -15,7 +15,7 @@ function requireAuth() {
       unsubscribe();
       if (!user) {
         Spinner.hide();
-        window.location.href = '../login.html';
+        window.location.href = getLoginUrl();
         return reject(new Error('Not authenticated'));
       }
       try {
@@ -91,35 +91,40 @@ function redirectIfLoggedIn() {
 }
 
 /**
- * logout — sign out and redirect to login
+ * getLoginUrl — returns the correct relative path to login.html
+ * based on how deep the current page is inside the repo.
+ * Works for both local file access and GitHub Pages hosting.
+ */
+function getLoginUrl() {
+  const inAdmin = window.location.pathname.toLowerCase().includes('/admin/');
+  return inAdmin ? '../login.html' : 'login.html';
+}
+
+/**
+ * logout — sign out and redirect to login from any page depth
  */
 async function logout() {
   try {
     await auth.signOut();
-    window.location.href = '../login.html';
+    window.location.href = getLoginUrl();
   } catch (err) {
     Toast.error('Logout failed. Please try again.');
   }
 }
 
 /**
- * logoutFromRoot — sign out from root-level pages
+ * logoutFromRoot — kept for backwards compatibility; same as logout()
  */
 async function logoutFromRoot() {
-  try {
-    await auth.signOut();
-    window.location.href = 'login.html';
-  } catch (err) {
-    Toast.error('Logout failed. Please try again.');
-  }
+  return logout();
 }
 
-// Bind logout buttons
+// Bind logout buttons (works for data-logout="student", "admin", "root", or any value)
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-logout]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const isRoot = btn.dataset.logout === 'root';
-      isRoot ? logoutFromRoot() : logout();
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      logout();
     });
   });
 });
