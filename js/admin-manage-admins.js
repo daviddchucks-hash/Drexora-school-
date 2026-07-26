@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentAdminUser = user;
     SidebarManager.init();
     updateSidebar(user);
+
+    // Bind "New Admin" button immediately — works before AND after gate
+    const addBtn = document.getElementById('add-admin-btn');
+    if (addBtn) addBtn.addEventListener('click', () => Modal.open('create-admin-modal'));
+
     initPasswordGate();
   } catch (err) {
     console.error('Admin manage-admins boot error:', err);
@@ -23,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initPasswordGate() {
   const form    = document.getElementById('password-gate-form');
   const errorEl = document.getElementById('gate-error');
+  const gateEl  = document.getElementById('password-gate');
   const btn     = document.getElementById('gate-btn');
 
   form.addEventListener('submit', async (e) => {
@@ -32,54 +38,44 @@ function initPasswordGate() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking…';
 
+    // Try to get password from Firebase; fall back to default if node missing or read fails
+    let correctPassword = 'advocate123'; // default fallback
     try {
-      // Fetch the portal password stored in Firebase
       const snap = await db.ref('settings/adminPortalPassword').get();
-      const correct = snap.exists() ? snap.val() : null;
-
-      if (!correct) {
-        // Password node missing — let super-admins in with the default
-        Toast.warning('Portal password not configured in Firebase yet. Contact the system administrator.');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-unlock"></i> Unlock';
-        return;
+      if (snap.exists() && snap.val()) {
+        correctPassword = String(snap.val());
       }
+    } catch (firebaseErr) {
+      // Permission denied or network error — use the default
+      console.warn('Could not read portal password from Firebase, using default:', firebaseErr.message);
+    }
 
-      if (entered === correct) {
-        // Correct — hide gate and load the page
-        const gate = document.getElementById('password-gate');
-        gate.classList.remove('active');
-        gate.style.display = 'none';
-        await initPage();
-      } else {
-        errorEl.style.display = '';
-        document.getElementById('gate-password').value = '';
-        document.getElementById('gate-password').focus();
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-unlock"></i> Unlock';
-      }
-    } catch (err) {
-      console.error('Gate check error:', err);
-      Toast.error('Failed to verify password. Check your connection.');
+    if (entered === correctPassword) {
+      // Correct — hide gate and load page data
+      gateEl.style.display = 'none';
+      await initPage();
+    } else {
+      errorEl.style.display = '';
+      document.getElementById('gate-password').value = '';
+      document.getElementById('gate-password').focus();
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-unlock"></i> Unlock';
     }
   });
 }
 
-// ─── Page Init (runs after gate unlocked) ────────────────────
+// ─── Page Init (after gate unlocked) ─────────────────────────
 async function initPage() {
   await loadAdmins();
   initCreateForm();
   initDeleteModal();
   initSearch();
-  initAddBtn();
 }
 
 // ─── Load & Render Admins ─────────────────────────────────────
 async function loadAdmins() {
-  const tbody     = document.getElementById('admins-tbody');
-  const countEl   = document.getElementById('admin-count');
+  const tbody      = document.getElementById('admins-tbody');
+  const countEl    = document.getElementById('admin-count');
   const tableCount = document.getElementById('admin-table-count');
   if (tbody) tbody.innerHTML = `<tr><td colspan="6"><div class="skeleton" style="height:40px"></div></td></tr>`;
 
@@ -117,17 +113,17 @@ function renderAdmins(list) {
   }
 
   tbody.innerHTML = list.map(a => {
-    const name    = escapeHtml(a.name  || a.fullname || 'Unknown');
-    const email   = escapeHtml(a.email || '—');
-    const role    = escapeHtml(a.role  || 'Administrator');
-    const added   = a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-NG', { year:'numeric', month:'short', day:'numeric' }) : '—';
+    const name     = escapeHtml(a.name || a.fullname || 'Unknown');
+    const email    = escapeHtml(a.email || '—');
+    const role     = escapeHtml(a.role  || 'Administrator');
+    const added    = a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-NG', { year:'numeric', month:'short', day:'numeric' }) : '—';
     const initials = (a.name || a.fullname || 'A').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
-    const isMe    = a.uid === currentAdminUser?.uid;
+    const isMe     = a.uid === currentAdminUser?.uid;
 
     return `
       <tr>
         <td>
-          <div class="avatar avatar-placeholder" style="width:38px;height:38px;font-size:.85rem;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;font-weight:700">
+          <div style="width:38px;height:38px;font-size:.85rem;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;font-weight:700;flex-shrink:0">
             ${initials}
           </div>
         </td>
@@ -163,15 +159,9 @@ function initSearch() {
         )
       : allAdmins;
     renderAdmins(filtered);
-    const tableCount = document.getElementById('admin-table-count');
-    if (tableCount) tableCount.textContent = `${filtered.length} admin${filtered.length !== 1 ? 's' : ''}`;
+    const tc = document.getElementById('admin-table-count');
+    if (tc) tc.textContent = `${filtered.length} admin${filtered.length !== 1 ? 's' : ''}`;
   }, 200));
-}
-
-// ─── Add Admin Button ─────────────────────────────────────────
-function initAddBtn() {
-  const btn = document.getElementById('add-admin-btn');
-  if (btn) btn.addEventListener('click', () => Modal.open('create-admin-modal'));
 }
 
 // ─── Create Admin Form ────────────────────────────────────────
@@ -187,32 +177,21 @@ function initCreateForm() {
     const password = document.getElementById('admin-password').value;
     const confirm  = document.getElementById('admin-password-confirm').value;
 
-    if (password !== confirm) {
-      Toast.warning('Passwords do not match.');
-      return;
-    }
-    if (password.length < 8) {
-      Toast.warning('Password must be at least 8 characters.');
-      return;
-    }
+    if (password !== confirm) { Toast.warning('Passwords do not match.'); return; }
+    if (password.length < 8)  { Toast.warning('Password must be at least 8 characters.'); return; }
 
     const btn = document.getElementById('create-admin-btn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating…';
 
     try {
-      // Create Firebase Auth account using a secondary app instance
-      // so we don't sign out the current admin session
-      const secondaryApp = firebase.initializeApp(firebase.app().options, 'adminCreation_' + Date.now());
+      // Use a secondary Firebase app instance so we don't sign out the current admin
+      const secondaryApp  = firebase.initializeApp(firebase.app().options, 'adminCreation_' + Date.now());
       const secondaryAuth = secondaryApp.auth();
 
-      const cred = await secondaryAuth.createUserWithEmailAndPassword(email, password);
+      const cred   = await secondaryAuth.createUserWithEmailAndPassword(email, password);
       const newUid = cred.user.uid;
-
-      // Update display name in Auth
       await cred.user.updateProfile({ displayName: fullname });
-
-      // Sign out secondary app and delete it
       await secondaryAuth.signOut();
       await secondaryApp.delete();
 
@@ -231,8 +210,7 @@ function initCreateForm() {
       await loadAdmins();
     } catch (err) {
       console.error('Create admin error:', err);
-      const msg = friendlyAuthError(err);
-      Toast.error('Failed to create admin: ' + msg);
+      Toast.error('Failed to create admin: ' + friendlyAuthError(err));
     } finally {
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-user-shield"></i> Create Admin';
@@ -286,10 +264,10 @@ function updateSidebar(user) {
 // ─── Friendly Firebase Auth Errors ───────────────────────────
 function friendlyAuthError(err) {
   const map = {
-    'auth/email-already-in-use':    'That email is already registered.',
-    'auth/invalid-email':           'The email address is invalid.',
-    'auth/weak-password':           'Password is too weak (min 8 characters).',
-    'auth/operation-not-allowed':   'Email/password accounts are not enabled in Firebase.',
+    'auth/email-already-in-use':  'That email is already registered.',
+    'auth/invalid-email':         'The email address is invalid.',
+    'auth/weak-password':         'Password is too weak (min 8 characters).',
+    'auth/operation-not-allowed': 'Email/password accounts are not enabled in Firebase.',
   };
   return map[err.code] || err.message || 'Unknown error.';
 }

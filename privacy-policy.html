@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Drexora School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { background: var(--bg); }
+    .legal-nav {
+      background: #0a1628;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    }
+    .legal-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      text-decoration: none;
+    }
+    .legal-nav-logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #f9a825, #f57f17);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: #0d2b6e;
+    }
+    .legal-nav-name { color: #fff; font-weight: 800; font-size: 1rem; }
+    .legal-nav-actions { display: flex; gap: .75rem; }
+    .legal-hero {
+      background: linear-gradient(135deg, #0a1628 0%, #0d2b6e 60%, #1565c0 100%);
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      color: #fff;
+    }
+    .legal-hero-icon {
+      width: 72px; height: 72px;
+      background: rgba(255,255,255,.12);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.25rem;
+    }
+    .legal-hero h1 { font-size: 2rem; font-weight: 900; margin-bottom: .5rem; }
+    .legal-hero p { color: rgba(255,255,255,.65); font-size: .95rem; margin: 0; }
+    .legal-hero .badge-date {
+      display: inline-block;
+      background: rgba(249,168,37,.2);
+      border: 1px solid rgba(249,168,37,.4);
+      color: #f9a825;
+      padding: .3rem .85rem;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+    .legal-body {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+    .legal-toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .legal-toc h3 { font-size: .9rem; font-weight: 700; margin-bottom: .85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+    .legal-toc ol { margin: 0; padding-left: 1.4rem; }
+    .legal-toc li { margin-bottom: .35rem; }
+    .legal-toc a { color: var(--primary); font-size: .88rem; font-weight: 500; }
+    .legal-section { margin-bottom: 2.75rem; }
+    .legal-section h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 1rem;
+      padding-bottom: .65rem;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .legal-section h2 i { color: var(--primary); font-size: 1rem; }
+    .legal-section p, .legal-section li { font-size: .92rem; line-height: 1.8; color: var(--text-muted); margin-bottom: .65rem; }
+    .legal-section ul, .legal-section ol { padding-left: 1.4rem; }
+    .legal-section li { margin-bottom: .35rem; }
+    .legal-section strong { color: var(--text); }
+    .legal-highlight {
+      background: rgba(21,101,192,.07);
+      border-left: 4px solid var(--primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: .9rem;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .legal-contact-card {
+      background: linear-gradient(135deg, #0a1628, #0d2b6e);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      color: #fff;
+      text-align: center;
+      margin-top: 3rem;
+    }
+    .legal-contact-card h3 { font-size: 1.15rem; margin-bottom: .5rem; }
+    .legal-contact-card p { color: rgba(255,255,255,.65); font-size: .88rem; margin-bottom: 1.25rem; }
+    .legal-contact-card .contact-row { display: flex; align-items: center; justify-content: center; gap: .5rem; font-size: .9rem; margin-bottom: .5rem; }
+    .legal-contact-card .contact-row i { color: #f9a825; }
+    .legal-footer {
+      background: #0a1628;
+      color: rgba(255,255,255,.5);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: .82rem;
+    }
+    .legal-footer a { color: rgba(255,255,255,.65); margin: 0 .5rem; }
+    .legal-footer a:hover { color: #fff; }
+    [data-theme="dark"] .legal-highlight { background: rgba(21,101,192,.15); }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="legal-nav">
+    <a class="legal-nav-brand" href="index.html">
+      <div class="legal-nav-logo">D</div>
+      <span class="legal-nav-name">Drexora School</span>
+    </a>
+    <div class="legal-nav-actions">
+      <a href="login.html" class="btn btn-sm btn-secondary"><i class="fas fa-sign-in-alt"></i> Student Login</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="legal-hero">
+    <div class="legal-hero-icon"><i class="fas fa-shield-alt"></i></div>
+    <div class="badge-date"><i class="fas fa-calendar-alt"></i> Effective: July 2026</div>
+    <h1>Privacy Policy</h1>
+    <p>How Drexora School collects, uses, and protects your personal information on our student portal.</p>
+  </div>
+
+  <!-- BODY -->
+  <div class="legal-body">
+
+    <!-- TOC -->
+    <div class="legal-toc">
+      <h3><i class="fas fa-list"></i> &nbsp;Table of Contents</h3>
+      <ol>
+        <li><a href="#section-1">Information We Collect</a></li>
+        <li><a href="#section-2">How We Use Your Information</a></li>
+        <li><a href="#section-3">Who Can See Your Data</a></li>
+        <li><a href="#section-4">Data Storage &amp; Security</a></li>
+        <li><a href="#section-5">Cookies &amp; Local Storage</a></li>
+        <li><a href="#section-6">Children's Privacy</a></li>
+        <li><a href="#section-7">Data Retention</a></li>
+        <li><a href="#section-8">Your Rights</a></li>
+        <li><a href="#section-9">Third-Party Services</a></li>
+        <li><a href="#section-10">Changes to This Policy</a></li>
+        <li><a href="#section-11">Contact Us</a></li>
+      </ol>
+    </div>
+
+    <div class="legal-highlight">
+      <strong>Summary:</strong> Drexora School takes your privacy seriously. We only collect information needed to run the student portal, we do not sell your data to anyone, and only you and authorised school administrators can see your academic records.
+    </div>
+
+    <!-- SECTIONS -->
+    <div class="legal-section" id="section-1">
+      <h2><i class="fas fa-database"></i> 1. Information We Collect</h2>
+      <p>When you register and use the Drexora School Student Portal, we collect the following categories of information:</p>
+      <ul>
+        <li><strong>Personal Identification:</strong> Full name, date of birth, gender, and passport photograph.</li>
+        <li><strong>Contact Information:</strong> Email address and phone number.</li>
+        <li><strong>Family Information:</strong> Parent or guardian name and contact details.</li>
+        <li><strong>Academic Information:</strong> Class, admission number, subject combination, academic results (C.A. scores, exam scores, term totals), class position, and teacher/principal comments.</li>
+        <li><strong>Account Credentials:</strong> Email address and password (passwords are hashed and managed securely by Firebase Authentication — we never store your plain-text password).</li>
+        <li><strong>Usage Data:</strong> Login timestamps and page interactions, collected automatically by Firebase services.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="section-2">
+      <h2><i class="fas fa-tasks"></i> 2. How We Use Your Information</h2>
+      <p>We use the information we collect solely for educational and administrative purposes, including:</p>
+      <ul>
+        <li>Creating and managing your student portal account.</li>
+        <li>Displaying your academic results, report cards, and class position.</li>
+        <li>Enabling school administrators to upload and manage academic records.</li>
+        <li>Sending school announcements and important notices.</li>
+        <li>Providing password reset functionality via your registered email.</li>
+        <li>Maintaining the security and integrity of the portal.</li>
+      </ul>
+      <p>We do <strong>not</strong> use your information for advertising, profiling, or any commercial purpose. We do <strong>not</strong> sell, rent, or share your data with third parties outside of those described in this policy.</p>
+    </div>
+
+    <div class="legal-section" id="section-3">
+      <h2><i class="fas fa-eye"></i> 3. Who Can See Your Data</h2>
+      <p>Access to your personal and academic data is strictly controlled:</p>
+      <ul>
+        <li><strong>You:</strong> You can see all your own profile information, results, and announcements after logging in.</li>
+        <li><strong>School Administrators:</strong> Authorised Drexora School administrators can view and manage all student records, upload results, and manage accounts. Administrators are trusted school staff only.</li>
+        <li><strong>Other Students:</strong> Other students cannot see your data. Each student's records are protected by Firebase security rules that enforce individual access control.</li>
+        <li><strong>Parents/Guardians:</strong> The portal is currently student-accessed. Parents may view records through their child's account credentials provided by the school.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="section-4">
+      <h2><i class="fas fa-lock"></i> 4. Data Storage &amp; Security</h2>
+      <p>The Drexora School Portal is built on <strong>Google Firebase</strong>, a platform that provides industry-standard security including:</p>
+      <ul>
+        <li>All data is stored in Google's Firebase Realtime Database and Firebase Authentication, hosted in secure Google data centres.</li>
+        <li>All data transmissions are encrypted using HTTPS/TLS.</li>
+        <li>Passwords are hashed by Firebase Authentication and are never stored in plain text.</li>
+        <li>Firebase security rules ensure each student can only access their own records.</li>
+        <li>Firebase Storage is used for profile photographs, with access controlled per-user.</li>
+      </ul>
+      <div class="legal-highlight">
+        While we implement strong security measures, no system is 100% immune to threats. We encourage students and administrators to use strong, unique passwords and to log out after each session.
+      </div>
+    </div>
+
+    <div class="legal-section" id="section-5">
+      <h2><i class="fas fa-cookie"></i> 5. Cookies &amp; Local Storage</h2>
+      <p>The portal uses browser <strong>local storage</strong> to remember your theme preference (light or dark mode) and to maintain your login session. We do not use advertising cookies or third-party tracking cookies.</p>
+      <ul>
+        <li><strong>Session cookies:</strong> Used by Firebase Authentication to keep you logged in securely.</li>
+        <li><strong>Local storage:</strong> Used to remember your display theme preference.</li>
+      </ul>
+      <p>You can clear these at any time through your browser settings, which will log you out of the portal.</p>
+    </div>
+
+    <div class="legal-section" id="section-6">
+      <h2><i class="fas fa-child"></i> 6. Children's Privacy</h2>
+      <p>Drexora School serves students who may be under the age of 13. We are committed to protecting the privacy of young students. In compliance with child safety standards:</p>
+      <ul>
+        <li>Student accounts are created by the school administration or by students with parental consent.</li>
+        <li>We do not knowingly collect more personal information than is necessary for educational purposes.</li>
+        <li>Parents or guardians may request to review, update, or delete their child's information by contacting us (see Section 11).</li>
+        <li>We do not serve advertisements to any users, including minors.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="section-7">
+      <h2><i class="fas fa-history"></i> 7. Data Retention</h2>
+      <p>We retain your data for the duration of your enrolment at Drexora School and for a reasonable period thereafter for record-keeping and compliance purposes. Specifically:</p>
+      <ul>
+        <li><strong>Academic records</strong> (results, report cards) are retained permanently as part of the school's official academic history.</li>
+        <li><strong>Account data</strong> (profile, login credentials) may be deactivated or removed upon request after graduation or withdrawal.</li>
+        <li>Data deletion requests can be made by contacting the school administration (see Section 11).</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="section-8">
+      <h2><i class="fas fa-user-check"></i> 8. Your Rights</h2>
+      <p>You have the following rights regarding your personal data:</p>
+      <ul>
+        <li><strong>Right to Access:</strong> You can view your profile and academic records at any time by logging into the portal.</li>
+        <li><strong>Right to Correction:</strong> You may request corrections to inaccurate information by contacting your class teacher or the school administrator.</li>
+        <li><strong>Right to Deletion:</strong> You may request deletion of your account and associated data by contacting the school (subject to our record-keeping obligations).</li>
+        <li><strong>Right to Information:</strong> You may ask us at any time what data we hold about you.</li>
+      </ul>
+      <p>To exercise any of these rights, please contact us using the details in Section 11.</p>
+    </div>
+
+    <div class="legal-section" id="section-9">
+      <h2><i class="fas fa-external-link-alt"></i> 9. Third-Party Services</h2>
+      <p>The portal uses the following third-party services, each with their own privacy policies:</p>
+      <ul>
+        <li><strong>Google Firebase</strong> (Authentication, Realtime Database, Storage) — <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Firebase Privacy Policy</a></li>
+        <li><strong>Google Fonts</strong> — used to load the Inter typeface for display.</li>
+        <li><strong>Font Awesome</strong> (via CDN) — used for icons throughout the portal.</li>
+      </ul>
+      <p>We do not use any social media tracking pixels, advertising networks, or analytics services beyond Firebase's built-in usage analytics.</p>
+    </div>
+
+    <div class="legal-section" id="section-10">
+      <h2><i class="fas fa-edit"></i> 10. Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time to reflect changes in our practices or for legal, operational, or regulatory reasons. When we make significant changes, we will:</p>
+      <ul>
+        <li>Post the updated policy on this page with a new effective date.</li>
+        <li>Notify students and administrators via a school announcement on the portal.</li>
+      </ul>
+      <p>Your continued use of the portal after any changes constitutes your acceptance of the updated policy. We encourage you to review this page periodically.</p>
+    </div>
+
+    <div class="legal-section" id="section-11">
+      <h2><i class="fas fa-envelope"></i> 11. Contact Us</h2>
+      <p>If you have any questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact us:</p>
+    </div>
+
+    <!-- CONTACT CARD -->
+    <div class="legal-contact-card">
+      <h3><i class="fas fa-shield-alt"></i> &nbsp;Data Privacy Contact</h3>
+      <p>We aim to respond to all privacy-related enquiries within 5 working days.</p>
+      <div class="contact-row"><i class="fas fa-envelope"></i> info@drexoraschool.edu.ng</div>
+      <div class="contact-row"><i class="fas fa-phone"></i> +234 800 000 0000</div>
+      <div class="contact-row"><i class="fas fa-map-marker-alt"></i> 123 School Avenue, Education District, Lagos State, Nigeria</div>
+      <div class="contact-row"><i class="fas fa-clock"></i> Monday – Friday, 8:00 AM – 3:30 PM</div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="legal-footer">
+    <p>&copy; 2026 Drexora School. All rights reserved.</p>
+    <p>
+      <a href="index.html">Home</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-conditions.html">Terms &amp; Conditions</a>
+      <a href="login.html">Student Login</a>
+    </p>
+  </footer>
+
+  <script src="js/utils.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Theme
+      const saved = localStorage.getItem('drexora-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms &amp; Conditions — Drexora School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { background: var(--bg); }
+    .legal-nav {
+      background: #0a1628;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    }
+    .legal-nav-brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .legal-nav-logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, #f9a825, #f57f17);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 1.1rem; color: #0d2b6e;
+    }
+    .legal-nav-name { color: #fff; font-weight: 800; font-size: 1rem; }
+    .legal-hero {
+      background: linear-gradient(135deg, #0a1628 0%, #1a3a1a 60%, #1b5e20 100%);
+      padding: 4rem 2rem 3rem;
+      text-align: center;
+      color: #fff;
+    }
+    .legal-hero-icon {
+      width: 72px; height: 72px;
+      background: rgba(255,255,255,.12);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      font-size: 1.8rem; margin-bottom: 1.25rem;
+    }
+    .legal-hero h1 { font-size: 2rem; font-weight: 900; margin-bottom: .5rem; }
+    .legal-hero p { color: rgba(255,255,255,.65); font-size: .95rem; margin: 0; }
+    .badge-date {
+      display: inline-block;
+      background: rgba(249,168,37,.2);
+      border: 1px solid rgba(249,168,37,.4);
+      color: #f9a825;
+      padding: .3rem .85rem;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+    .legal-body { max-width: 800px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+    .legal-toc {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.5rem 2rem; margin-bottom: 2.5rem;
+    }
+    .legal-toc h3 { font-size: .9rem; font-weight: 700; margin-bottom: .85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+    .legal-toc ol { margin: 0; padding-left: 1.4rem; }
+    .legal-toc li { margin-bottom: .35rem; }
+    .legal-toc a { color: var(--primary); font-size: .88rem; font-weight: 500; }
+    .legal-section { margin-bottom: 2.75rem; }
+    .legal-section h2 {
+      font-size: 1.2rem; font-weight: 800; color: var(--text);
+      margin-bottom: 1rem; padding-bottom: .65rem;
+      border-bottom: 2px solid var(--border);
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .legal-section h2 i { color: var(--primary); font-size: 1rem; }
+    .legal-section p, .legal-section li { font-size: .92rem; line-height: 1.8; color: var(--text-muted); margin-bottom: .65rem; }
+    .legal-section ul, .legal-section ol { padding-left: 1.4rem; }
+    .legal-section li { margin-bottom: .35rem; }
+    .legal-section strong { color: var(--text); }
+    .legal-highlight {
+      background: rgba(21,101,192,.07);
+      border-left: 4px solid var(--primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 1rem 1.25rem; margin: 1.25rem 0;
+      font-size: .9rem; color: var(--text); line-height: 1.7;
+    }
+    .legal-warning {
+      background: rgba(239,68,68,.07);
+      border-left: 4px solid var(--danger);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 1rem 1.25rem; margin: 1.25rem 0;
+      font-size: .9rem; color: var(--text); line-height: 1.7;
+    }
+    .legal-contact-card {
+      background: linear-gradient(135deg, #0a1628, #0d2b6e);
+      border-radius: var(--radius-lg); padding: 2rem;
+      color: #fff; text-align: center; margin-top: 3rem;
+    }
+    .legal-contact-card h3 { font-size: 1.15rem; margin-bottom: .5rem; }
+    .legal-contact-card p { color: rgba(255,255,255,.65); font-size: .88rem; margin-bottom: 1.25rem; }
+    .legal-contact-card .contact-row { display: flex; align-items: center; justify-content: center; gap: .5rem; font-size: .9rem; margin-bottom: .5rem; }
+    .legal-contact-card .contact-row i { color: #f9a825; }
+    .legal-footer {
+      background: #0a1628; color: rgba(255,255,255,.5);
+      text-align: center; padding: 1.5rem; font-size: .82rem;
+    }
+    .legal-footer a { color: rgba(255,255,255,.65); margin: 0 .5rem; }
+    .legal-footer a:hover { color: #fff; }
+    [data-theme="dark"] .legal-highlight { background: rgba(21,101,192,.15); }
+    [data-theme="dark"] .legal-warning { background: rgba(239,68,68,.12); }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="legal-nav">
+    <a class="legal-nav-brand" href="index.html">
+      <div class="legal-nav-logo">D</div>
+      <span class="legal-nav-name">Drexora School</span>
+    </a>
+    <div>
+      <a href="login.html" class="btn btn-sm btn-secondary"><i class="fas fa-sign-in-alt"></i> Student Login</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="legal-hero">
+    <div class="legal-hero-icon"><i class="fas fa-file-contract"></i></div>
+    <div class="badge-date"><i class="fas fa-calendar-alt"></i> Effective: July 2026</div>
+    <h1>Terms &amp; Conditions</h1>
+    <p>Please read these terms carefully before using the Drexora School Student Portal.</p>
+  </div>
+
+  <!-- BODY -->
+  <div class="legal-body">
+
+    <!-- TOC -->
+    <div class="legal-toc">
+      <h3><i class="fas fa-list"></i> &nbsp;Table of Contents</h3>
+      <ol>
+        <li><a href="#t1">Acceptance of Terms</a></li>
+        <li><a href="#t2">Eligibility &amp; Account Access</a></li>
+        <li><a href="#t3">Student Responsibilities</a></li>
+        <li><a href="#t4">Administrator Responsibilities</a></li>
+        <li><a href="#t5">Accuracy of Information</a></li>
+        <li><a href="#t6">Prohibited Conduct</a></li>
+        <li><a href="#t7">Intellectual Property</a></li>
+        <li><a href="#t8">Disclaimer of Warranties</a></li>
+        <li><a href="#t9">Limitation of Liability</a></li>
+        <li><a href="#t10">Account Termination</a></li>
+        <li><a href="#t11">Changes to These Terms</a></li>
+        <li><a href="#t12">Governing Law</a></li>
+        <li><a href="#t13">Contact Us</a></li>
+      </ol>
+    </div>
+
+    <div class="legal-highlight">
+      <strong>In plain language:</strong> By using the Drexora School portal, you agree to use it honestly, keep your account secure, and respect the school's rules. Misuse of the portal may result in account suspension.
+    </div>
+
+    <div class="legal-section" id="t1">
+      <h2><i class="fas fa-handshake"></i> 1. Acceptance of Terms</h2>
+      <p>By accessing or using the Drexora School Student Portal (the "Portal"), you agree to be bound by these Terms &amp; Conditions ("Terms") and our <a href="privacy-policy.html">Privacy Policy</a>, which is incorporated herein by reference.</p>
+      <p>If you do not agree to these Terms, you must not access or use the Portal. Use of the Portal constitutes your full acceptance of these Terms.</p>
+      <p>These Terms apply to all users of the Portal, including students, parents/guardians accessing through a student account, and school administrators.</p>
+    </div>
+
+    <div class="legal-section" id="t2">
+      <h2><i class="fas fa-user-check"></i> 2. Eligibility &amp; Account Access</h2>
+      <ul>
+        <li>The Portal is intended for use by <strong>currently enrolled students</strong> of Drexora School and authorised school staff.</li>
+        <li>Student accounts are created upon admission or registration. You must use your own assigned account only.</li>
+        <li>You must be at least 10 years old to create and use a student account. Students under this age require parental assistance.</li>
+        <li>Administrator accounts are granted only to authorised Drexora School staff by existing administrators.</li>
+        <li>You are responsible for maintaining the confidentiality of your login credentials. Do not share your password with anyone, including classmates.</li>
+        <li>You must notify the school administration immediately if you suspect your account has been compromised.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="t3">
+      <h2><i class="fas fa-user-graduate"></i> 3. Student Responsibilities</h2>
+      <p>As a student user of the Portal, you agree to:</p>
+      <ul>
+        <li>Provide accurate, truthful information during registration. Name, date of birth, class, subjects, and email <strong>cannot be changed after registration</strong> — ensure accuracy before submitting.</li>
+        <li>Use the Portal only for legitimate academic purposes related to your studies at Drexora School.</li>
+        <li>Maintain the security of your account by using a strong password and logging out after each session, especially on shared devices.</li>
+        <li>Report any errors in your academic results or profile to your class teacher or the school administration promptly.</li>
+        <li>Respect the portal as an official school system and conduct yourself accordingly.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="t4">
+      <h2><i class="fas fa-user-shield"></i> 4. Administrator Responsibilities</h2>
+      <p>Administrators granted access to the admin control panel agree to:</p>
+      <ul>
+        <li>Use administrative privileges solely for official Drexora School business.</li>
+        <li>Ensure the accuracy of all student results and data entered into the system.</li>
+        <li>Protect the admin portal password and not share admin credentials with unauthorised persons.</li>
+        <li>Not access, modify, or delete student records without proper academic or administrative authority.</li>
+        <li>Handle all student data in accordance with the school's Privacy Policy and applicable data protection laws.</li>
+        <li>Report any portal security vulnerabilities immediately to the system administrator.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="t5">
+      <h2><i class="fas fa-check-double"></i> 5. Accuracy of Information</h2>
+      <p>Drexora School takes reasonable care to ensure that academic results and information displayed on the Portal are accurate. However:</p>
+      <ul>
+        <li>Results displayed are as recorded by teachers and administrators. If you believe a result is incorrect, contact your class teacher or the school office.</li>
+        <li>The Portal reflects the school's official academic records. Discrepancies should be reported within <strong>two weeks</strong> of results being published.</li>
+        <li>The school reserves the right to correct clerical errors in results at any time.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="t6">
+      <h2><i class="fas fa-ban"></i> 6. Prohibited Conduct</h2>
+      <p>You must <strong>not</strong> use the Portal to:</p>
+      <ul>
+        <li>Access, view, or attempt to access another student's account, results, or personal information.</li>
+        <li>Attempt to bypass, hack, or exploit the portal's authentication or security systems.</li>
+        <li>Impersonate another student, staff member, or administrator.</li>
+        <li>Submit false registration information or fraudulent academic data.</li>
+        <li>Use automated tools, bots, or scripts to access or scrape portal data.</li>
+        <li>Attempt to alter, delete, or corrupt academic records.</li>
+        <li>Share your login credentials or allow others to access your account.</li>
+        <li>Engage in any activity that violates Nigerian law or international data protection standards.</li>
+      </ul>
+      <div class="legal-warning">
+        <strong><i class="fas fa-exclamation-triangle"></i> &nbsp;Violation Warning:</strong> Breach of these prohibitions may result in immediate account suspension, disciplinary action by the school, and referral to appropriate authorities where applicable.
+      </div>
+    </div>
+
+    <div class="legal-section" id="t7">
+      <h2><i class="fas fa-copyright"></i> 7. Intellectual Property</h2>
+      <p>All content on the Drexora School Portal, including but not limited to the design, layout, logos, text, and code, is the property of Drexora School or its licensors and is protected by applicable intellectual property laws.</p>
+      <ul>
+        <li>You may download and print your own result sheets and report cards for personal use.</li>
+        <li>You may not reproduce, distribute, or commercially exploit any content from the Portal without written permission from the school.</li>
+        <li>Student data (names, results, etc.) belongs to the student and is managed by the school in accordance with the Privacy Policy.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="t8">
+      <h2><i class="fas fa-info-circle"></i> 8. Disclaimer of Warranties</h2>
+      <p>The Portal is provided <strong>"as is"</strong> and <strong>"as available"</strong> without warranties of any kind, express or implied. Drexora School does not warrant that:</p>
+      <ul>
+        <li>The Portal will be uninterrupted, error-free, or completely secure at all times.</li>
+        <li>Results or information displayed will always be free from typographical errors.</li>
+        <li>The Portal will be available during scheduled maintenance or unexpected outages.</li>
+      </ul>
+      <p>We will make reasonable efforts to ensure consistent availability and accuracy, but the school is not liable for temporary downtime or minor errors.</p>
+    </div>
+
+    <div class="legal-section" id="t9">
+      <h2><i class="fas fa-balance-scale"></i> 9. Limitation of Liability</h2>
+      <p>To the fullest extent permitted by Nigerian law, Drexora School shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of, or inability to use, the Portal, including but not limited to:</p>
+      <ul>
+        <li>Loss of data due to technical failures.</li>
+        <li>Unauthorised access resulting from sharing of your own credentials.</li>
+        <li>Decisions made based on information displayed on the Portal.</li>
+      </ul>
+      <p>In all cases, the school's total liability shall not exceed the amount (if any) paid by you to access the Portal.</p>
+    </div>
+
+    <div class="legal-section" id="t10">
+      <h2><i class="fas fa-user-times"></i> 10. Account Termination</h2>
+      <p>Drexora School reserves the right to suspend or terminate your account at any time if:</p>
+      <ul>
+        <li>You violate these Terms &amp; Conditions.</li>
+        <li>You are no longer enrolled at Drexora School.</li>
+        <li>Your account shows suspicious activity or is compromised.</li>
+        <li>The school determines that termination is necessary for the safety or integrity of the Portal.</li>
+      </ul>
+      <p>Upon termination, your access to the Portal will cease. Your academic records will be retained by the school in accordance with the Privacy Policy.</p>
+    </div>
+
+    <div class="legal-section" id="t11">
+      <h2><i class="fas fa-edit"></i> 11. Changes to These Terms</h2>
+      <p>Drexora School may revise these Terms &amp; Conditions at any time. When we make material changes, we will:</p>
+      <ul>
+        <li>Update the effective date at the top of this page.</li>
+        <li>Post a notice via the school announcements system on the Portal.</li>
+      </ul>
+      <p>Your continued use of the Portal following any changes constitutes your acceptance of the revised Terms.</p>
+    </div>
+
+    <div class="legal-section" id="t12">
+      <h2><i class="fas fa-gavel"></i> 12. Governing Law</h2>
+      <p>These Terms &amp; Conditions are governed by and construed in accordance with the laws of the <strong>Federal Republic of Nigeria</strong>. Any disputes arising from these Terms shall be subject to the exclusive jurisdiction of the courts of Lagos State, Nigeria.</p>
+      <p>The Nigeria Data Protection Act (NDPA) and other applicable Nigerian data protection regulations apply to the handling of personal information on this Portal.</p>
+    </div>
+
+    <div class="legal-section" id="t13">
+      <h2><i class="fas fa-envelope"></i> 13. Contact Us</h2>
+      <p>If you have any questions about these Terms &amp; Conditions, please contact the school administration:</p>
+    </div>
+
+    <!-- CONTACT CARD -->
+    <div class="legal-contact-card">
+      <h3><i class="fas fa-school"></i> &nbsp;Drexora School Administration</h3>
+      <p>We are happy to clarify any part of these terms for students, parents, or staff.</p>
+      <div class="contact-row"><i class="fas fa-envelope"></i> info@drexoraschool.edu.ng</div>
+      <div class="contact-row"><i class="fas fa-phone"></i> +234 800 000 0000</div>
+      <div class="contact-row"><i class="fas fa-map-marker-alt"></i> 123 School Avenue, Education District, Lagos State, Nigeria</div>
+      <div class="contact-row"><i class="fas fa-clock"></i> Monday – Friday, 8:00 AM – 3:30 PM</div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="legal-footer">
+    <p>&copy; 2026 Drexora School. All rights reserved.</p>
+    <p>
+      <a href="index.html">Home</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-conditions.html">Terms &amp; Conditions</a>
+      <a href="login.html">Student Login</a>
+    </p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('drexora-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+    });
+  </script>
+</body>
+</html>

@@ -15,8 +15,9 @@
   <div class="spinner-overlay" id="spinner-overlay"><div class="spinner"></div></div>
 
   <!-- ===== PASSWORD GATE OVERLAY ===== -->
-  <div class="modal-overlay active" id="password-gate" style="z-index:9999;background:rgba(10,22,40,.92);backdrop-filter:blur(6px)">
-    <div class="modal" style="max-width:420px;text-align:center">
+  <!-- NOTE: intentionally NOT using class="modal-overlay" to prevent utils.js closeAll from dismissing it -->
+  <div id="password-gate" style="position:fixed;inset:0;z-index:9999;background:rgba(10,22,40,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:1rem">
+    <div style="background:var(--surface);border-radius:var(--radius-lg);padding:2.25rem;box-shadow:0 25px 60px rgba(0,0,0,.4);width:100%;max-width:420px;text-align:center">
       <div style="margin-bottom:1.5rem">
         <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--primary-dark),var(--primary));display:inline-flex;align-items:center;justify-content:center;margin-bottom:1rem">
           <i class="fas fa-shield-alt" style="font-size:1.6rem;color:#fff"></i>
@@ -146,7 +147,7 @@
         </div>
         <div class="topbar-right">
           <button class="topbar-btn" data-theme-toggle><i class="fas fa-moon theme-icon"></i></button>
-          <button class="btn btn-primary btn-sm" id="add-admin-btn">
+          <button class="btn btn-primary btn-sm" id="add-admin-btn" onclick="Modal.open('create-admin-modal')">
             <i class="fas fa-user-shield"></i> New Admin
           </button>
         </div>
