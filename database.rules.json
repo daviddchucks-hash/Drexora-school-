@@ -1,46 +1,91 @@
 {
   "rules": {
 
+    // ══════════════════════════════════════════════════════════════
+    // STUDENTS
+    // ══════════════════════════════════════════════════════════════
     "students": {
-      // Admin can read/write ALL student records (full access for management)
-      ".read":  "root.child('admins').child(auth.uid).exists()",
-      ".write": "root.child('admins').child(auth.uid).exists()",
+
+      // Admins can read & write the entire students subtree
+      ".read":  "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
 
       "$uid": {
-        // Profile: students can read & write their own profile (self-registration + profile updates)
-        //          admins can also read/write (already covered by parent, but explicit for clarity)
+
+        // PROFILE
+        // Students: read & write their own profile (self-registration + profile updates)
+        // Admins:   already covered by the parent rule above
         "profile": {
           ".read":  "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).exists())",
           ".write": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).exists())"
         },
 
-        // Results: students can VIEW their own results, but ONLY admins can upload/edit results
+        // RESULTS
+        // Students: read-only for their own results
+        // Admins:   full read & write (upload, edit, delete results)
+        // Covers: results/$session/$term  and  results/$session/$term/subjects/$subject
         "results": {
           ".read":  "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).exists())",
-          ".write": "root.child('admins').child(auth.uid).exists()"
+          ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
         }
       }
     },
 
+    // ══════════════════════════════════════════════════════════════
+    // ADMINS
+    // ══════════════════════════════════════════════════════════════
     "admins": {
-      // Any authenticated user can check if a UID is an admin (needed for auth-guard checks)
+      // Any authenticated user may check whether a UID is an admin
+      // (required by auth-guard.js and login.js redirect checks)
       ".read":  "auth != null",
-      // Only existing admins can add/remove admin records
-      ".write": "root.child('admins').child(auth.uid).exists()"
+
+      // Only an existing admin can promote or demote another admin
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
     },
 
+    // ══════════════════════════════════════════════════════════════
+    // ANNOUNCEMENTS
+    // ══════════════════════════════════════════════════════════════
     "announcements": {
-      // All authenticated users (students + admins) can read announcements
+      // All logged-in users (students + admins) can read announcements
       ".read":  "auth != null",
-      // Only admins can post or delete announcements
-      ".write": "root.child('admins').child(auth.uid).exists()"
+
+      // Only admins can create, edit, or delete announcements
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
     },
 
+    // ══════════════════════════════════════════════════════════════
+    // CONTACT MESSAGES  (public contact form on landing page)
+    // ══════════════════════════════════════════════════════════════
+    "contact_messages": {
+      // Only admins can read submitted contact messages
+      ".read":  "auth != null && root.child('admins').child(auth.uid).exists()",
+
+      // Anyone (including unauthenticated visitors) can submit the
+      // contact form — no login required on the landing page
+      ".write": true,
+
+      // Validate each message has the required fields and sane lengths
+      "$messageId": {
+        ".validate": "newData.hasChildren(['name','email','message','timestamp'])
+                      && newData.child('name').isString()
+                      && newData.child('name').val().length <= 120
+                      && newData.child('email').isString()
+                      && newData.child('email').val().length <= 254
+                      && newData.child('message').isString()
+                      && newData.child('message').val().length <= 2000
+                      && newData.child('timestamp').isNumber()"
+      }
+    },
+
+    // ══════════════════════════════════════════════════════════════
+    // SETTINGS  (portal password gate and other admin config)
+    // ══════════════════════════════════════════════════════════════
     "settings": {
-      // Only admins can read settings (includes portal password)
-      ".read":  "root.child('admins').child(auth.uid).exists()",
-      // Only admins can write settings
-      ".write": "root.child('admins').child(auth.uid).exists()"
+      // Only admins can read or change portal settings
+      ".read":  "auth != null && root.child('admins').child(auth.uid).exists()",
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
     }
+
   }
 }
