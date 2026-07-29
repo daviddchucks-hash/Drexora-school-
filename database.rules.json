@@ -51,7 +51,11 @@
       ".read":  "auth != null",
 
       // Only admins can create, edit, or delete announcements
-      ".write": "auth != null && root.child('admins').child(auth.uid).exists()"
+      ".write": "auth != null && root.child('admins').child(auth.uid).exists()",
+
+      // Index required for orderByChild('timestamp') queries used in
+      // notifications.js, dashboard.js, and admin-announcements.js
+      ".indexOn": ["timestamp"]
     },
 
     // ══════════════════════════════════════════════════════════════
