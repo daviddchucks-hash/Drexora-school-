@@ -11,11 +11,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* ---------- Login Form ---------- */
 function initLoginForm() {
-  const form = document.getElementById('login-form');
+  const form       = document.getElementById('login-form');
   const emailInput = document.getElementById('login-email');
   const passInput  = document.getElementById('login-password');
   const btn        = document.getElementById('login-btn');
-  const errorEl    = document.getElementById('login-error');
 
   if (!form) return;
 
@@ -35,31 +34,38 @@ function initLoginForm() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
     Spinner.show();
 
+    // ── Step 1: Firebase Authentication ────────────────────────
+    let user;
     try {
       const cred = await auth.signInWithEmailAndPassword(email, password);
-      const user = cred.user;
+      user = cred.user;
+    } catch (authErr) {
+      // Auth itself failed (wrong password, network error, unauthorised domain, etc.)
+      Spinner.hide();
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+      showError(getAuthError(authErr.code));
+      return;
+    }
 
-      // Check if admin
+    // ── Step 2: Check admin / student role ─────────────────────
+    // DB permission errors here must NOT block the user — auth already
+    // succeeded, so we redirect to the right page regardless.
+    try {
       const adminSnap = await db.ref(`admins/${user.uid}`).get();
       if (adminSnap.exists()) {
         Toast.success('Welcome, Administrator!');
         window.location.href = 'admin/index.html';
-      } else {
-        // Check student profile exists
-        const profileSnap = await db.ref(`students/${user.uid}/profile`).get();
-        if (!profileSnap.exists()) {
-          // Profile not set up yet — still let them in
-          Toast.info('Profile not fully set up. Contact admin.');
-        }
-        Toast.success('Login successful! Welcome back.');
-        window.location.href = 'dashboard.html';
+        return;
       }
-    } catch (err) {
-      Spinner.hide();
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
-      showError(getAuthError(err.code));
+    } catch (_) {
+      // Cannot read admins node — Firebase Console rules probably not published yet.
+      // Fall through and send the user to the student dashboard anyway.
     }
+
+    // Student (or couldn't verify admin status) → dashboard
+    Toast.success('Login successful! Welcome back.');
+    window.location.href = 'dashboard.html';
   });
 
   // Forgot password
@@ -109,6 +115,8 @@ function showError(msg) {
   const span = el.querySelector('span') || el;
   span.textContent = msg;
   el.classList.remove('d-none');
+  // Scroll error into view so it's visible on mobile
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function hideError() {
@@ -118,14 +126,14 @@ function hideError() {
 
 function getAuthError(code) {
   const errors = {
-    'auth/user-not-found':        'No account found with this email.',
-    'auth/wrong-password':        'Incorrect password. Please try again.',
-    'auth/invalid-email':         'Please enter a valid email address.',
-    'auth/user-disabled':         'This account has been disabled. Contact admin.',
-    'auth/too-many-requests':     'Too many failed attempts. Please try again later.',
-    'auth/network-request-failed':'Network error. Check your connection.',
-    'auth/invalid-credential':    'Invalid email or password. Please try again.',
-    'auth/unauthorized-domain':   'This domain is not authorised in Firebase. The school administrator must add "' + window.location.hostname + '" to the Firebase Console → Authentication → Settings → Authorised Domains.',
+    'auth/user-not-found':         'No account found with this email.',
+    'auth/wrong-password':         'Incorrect password. Please try again.',
+    'auth/invalid-email':          'Please enter a valid email address.',
+    'auth/user-disabled':          'This account has been disabled. Contact admin.',
+    'auth/too-many-requests':      'Too many failed attempts. Please try again later.',
+    'auth/network-request-failed': 'Network error. Check your internet connection.',
+    'auth/invalid-credential':     'Invalid email or password. Please try again.',
+    'auth/unauthorized-domain':    'Login is blocked on this domain. The administrator must add "' + window.location.hostname + '" to Firebase Console → Authentication → Settings → Authorised Domains.',
   };
-  return errors[code] || 'Login failed. Please try again.';
+  return errors[code] || `Login failed (${code || 'unknown error'}). Please try again.`;
 }

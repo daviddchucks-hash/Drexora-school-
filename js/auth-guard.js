@@ -7,6 +7,8 @@
  * requireAuth — call on any protected student page.
  * Redirects to login if user is not authenticated.
  * Resolves with { user, profile } when authenticated.
+ * If the profile DB read fails (e.g. rules not published yet),
+ * resolves with profile: null instead of crashing the page.
  */
 function requireAuth() {
   return new Promise((resolve, reject) => {
@@ -25,9 +27,12 @@ function requireAuth() {
         Spinner.hide();
         resolve({ user, profile });
       } catch (err) {
+        // DB read failed (most likely Firebase Console rules not published yet).
+        // Resolve with no profile rather than crashing — the page will show
+        // a "profile incomplete" state instead of redirecting to login.
         Spinner.hide();
-        console.error('Auth guard error:', err);
-        reject(err);
+        console.warn('Auth guard: profile read failed (check Firebase Console rules):', err.message || err);
+        resolve({ user, profile: null });
       }
     });
   });
@@ -35,7 +40,7 @@ function requireAuth() {
 
 /**
  * requireAdmin — call on any protected admin page.
- * Redirects to login if user is not admin.
+ * Redirects to login if user is not an admin.
  */
 function requireAdmin() {
   return new Promise((resolve, reject) => {
@@ -58,7 +63,9 @@ function requireAdmin() {
         Spinner.hide();
         resolve({ user, admin: adminSnap.val() });
       } catch (err) {
+        // DB read failed — cannot confirm admin status, send back to login
         Spinner.hide();
+        console.warn('requireAdmin: DB read failed:', err.message || err);
         window.location.href = '../login.html';
         reject(err);
       }
@@ -67,16 +74,19 @@ function requireAdmin() {
 }
 
 /**
- * redirectIfLoggedIn — call on login page.
- * Redirects to dashboard if already authenticated.
+ * redirectIfLoggedIn — call on the login page.
+ * If the user is already signed in, redirect them to the right page.
+ * If the DB role-check fails, redirect to student dashboard anyway
+ * (auth already succeeded, so there's no reason to stay on login).
  */
 function redirectIfLoggedIn() {
   return new Promise((resolve) => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       unsubscribe();
       if (!user) { resolve(null); return; }
+
+      // User is authenticated — redirect to the right destination.
       try {
-        // Check if admin — redirect accordingly
         const adminSnap = await db.ref(`admins/${user.uid}`).get();
         if (adminSnap.exists()) {
           window.location.href = 'admin/index.html';
@@ -84,7 +94,9 @@ function redirectIfLoggedIn() {
           window.location.href = 'dashboard.html';
         }
       } catch {
-        resolve(null);
+        // DB check failed (rules not published, network error, etc.).
+        // User IS authenticated, so send them to the student dashboard.
+        window.location.href = 'dashboard.html';
       }
     });
   });
@@ -93,7 +105,6 @@ function redirectIfLoggedIn() {
 /**
  * getLoginUrl — returns the correct relative path to login.html
  * based on how deep the current page is inside the repo.
- * Works for both local file access and GitHub Pages hosting.
  */
 function getLoginUrl() {
   const inAdmin = window.location.pathname.toLowerCase().includes('/admin/');
@@ -101,7 +112,7 @@ function getLoginUrl() {
 }
 
 /**
- * logout — sign out and redirect to login from any page depth
+ * logout — sign out and redirect to login from any page depth.
  */
 async function logout() {
   try {
@@ -113,7 +124,7 @@ async function logout() {
 }
 
 /**
- * logoutFromRoot — kept for backwards compatibility; same as logout()
+ * logoutFromRoot — kept for backwards compatibility; same as logout().
  */
 async function logoutFromRoot() {
   return logout();
