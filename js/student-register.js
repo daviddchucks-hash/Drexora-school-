@@ -239,6 +239,7 @@ function getRegError(code) {
     'auth/weak-password':           'Password is too weak. Use at least 8 characters.',
     'auth/network-request-failed':  'Network error. Check your connection and try again.',
     'auth/too-many-requests':       'Too many attempts. Please try again later.',
+    'auth/unauthorized-domain':     'This domain is not authorised in Firebase. The school administrator must add "' + window.location.hostname + '" to the Firebase Console → Authentication → Settings → Authorised Domains.',
   };
   return errors[code] || 'Registration failed. Please try again.';
 }

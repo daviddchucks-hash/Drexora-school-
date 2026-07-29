@@ -105,7 +105,10 @@ async function handleForgotPassword() {
 /* ---------- Error Helpers ---------- */
 function showError(msg) {
   const el = document.getElementById('login-error');
-  if (el) { el.textContent = msg; el.classList.remove('d-none'); }
+  if (!el) return;
+  const span = el.querySelector('span') || el;
+  span.textContent = msg;
+  el.classList.remove('d-none');
 }
 
 function hideError() {
@@ -115,13 +118,14 @@ function hideError() {
 
 function getAuthError(code) {
   const errors = {
-    'auth/user-not-found':       'No account found with this email.',
-    'auth/wrong-password':       'Incorrect password. Please try again.',
-    'auth/invalid-email':        'Please enter a valid email address.',
-    'auth/user-disabled':        'This account has been disabled. Contact admin.',
-    'auth/too-many-requests':    'Too many failed attempts. Please try again later.',
+    'auth/user-not-found':        'No account found with this email.',
+    'auth/wrong-password':        'Incorrect password. Please try again.',
+    'auth/invalid-email':         'Please enter a valid email address.',
+    'auth/user-disabled':         'This account has been disabled. Contact admin.',
+    'auth/too-many-requests':     'Too many failed attempts. Please try again later.',
     'auth/network-request-failed':'Network error. Check your connection.',
-    'auth/invalid-credential':   'Invalid email or password. Please try again.',
+    'auth/invalid-credential':    'Invalid email or password. Please try again.',
+    'auth/unauthorized-domain':   'This domain is not authorised in Firebase. The school administrator must add "' + window.location.hostname + '" to the Firebase Console → Authentication → Settings → Authorised Domains.',
   };
   return errors[code] || 'Login failed. Please try again.';
 }

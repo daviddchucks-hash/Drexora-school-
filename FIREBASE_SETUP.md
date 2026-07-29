@@ -1,6 +1,21 @@
 # 🔥 Firebase Setup Guide — Drexora School Portal
 
-Follow these steps to fix the admin section so it can fetch all students.
+---
+
+## ⚠️ URGENT — Login / Registration Broken After Adding Custom Domain
+
+**Symptom:** Students and admins cannot log in or create accounts after the custom domain `advocate.drexxora.name.ng` was added via GitHub Pages CNAME.
+
+**Root cause:** Firebase Authentication only allows sign-in requests from domains that are explicitly listed in its Authorised Domains list. Adding a custom domain to GitHub Pages does NOT automatically authorise it in Firebase. All `signInWithEmailAndPassword` and `createUserWithEmailAndPassword` calls are silently rejected.
+
+**Fix — takes 2 minutes:**
+
+1. Go to [Firebase Console → Authentication → Settings → Authorised Domains](https://console.firebase.google.com/project/drexora-school/authentication/settings)
+2. Click **Add domain**
+3. Type `advocate.drexxora.name.ng` and click **Add**
+4. The site will work immediately — no re-deploy needed
+
+If you ever add another custom domain in future, repeat this step for that domain too.
 
 ---
 
