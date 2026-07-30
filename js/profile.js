@@ -156,30 +156,76 @@ function initPasswordChange() {
   });
 }
 
-/* ---------- Photo Upload ---------- */
+/* ---------- Photo Upload (via Cloudinary API endpoint) ---------- */
 function initPhotoUpload() {
   const input     = document.getElementById('photo-input');
   const uploadBtn = document.getElementById('upload-photo-btn');
   if (!input || !uploadBtn) return;
 
   uploadBtn.addEventListener('click', () => input.click());
+
   input.addEventListener('change', async () => {
     const file = input.files[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) { Toast.error('Please select an image file.'); return; }
-    if (file.size > 5 * 1024 * 1024)    { Toast.error('Image must be smaller than 5MB.'); return; }
+
+    // Client-side validation
+    if (!file.type.startsWith('image/')) {
+      Toast.error('Please select an image file.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      Toast.error('Image must be smaller than 5 MB.');
+      return;
+    }
+
     Spinner.show();
     try {
-      const ref = storage.ref(`passports/${currentUser.uid}`);
-      await ref.put(file);
-      const url = await ref.getDownloadURL();
+      // Build multipart form data for the upload endpoint
+      const formData = new FormData();
+      formData.append('photo', file);
+      formData.append('userId', currentUser.uid);
+
+      // POST to the Cloudinary upload API endpoint
+      const apiUrl = (typeof DREXORA_CONFIG !== 'undefined' && DREXORA_CONFIG.CLOUDINARY_UPLOAD_API_URL)
+        ? DREXORA_CONFIG.CLOUDINARY_UPLOAD_API_URL
+        : '/api/upload/profile-photo';
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errMsg = (data && data.error) ? data.error : 'Upload failed. Please try again.';
+        throw new Error(errMsg);
+      }
+
+      const url = data.url;
+      if (!url) throw new Error('No image URL returned from upload service.');
+
+      // Save the Cloudinary secure URL to Firebase Realtime Database
       await db.ref(`students/${currentUser.uid}/profile`).update({ photo: url });
       currentProfile.photo = url;
+
+      // Update UI
       const photoEl = document.getElementById('profile-photo-display');
-      if (photoEl) photoEl.innerHTML = `<img src="${escapeHtml(url)}" alt="Passport" class="avatar avatar-lg">`;
+      if (photoEl) {
+        photoEl.innerHTML = `<img src="${escapeHtml(url)}" alt="Passport" class="avatar avatar-lg">`;
+      }
+
+      // Also update the sidebar avatar immediately
+      const sidebarPhoto = document.getElementById('sidebar-user-photo');
+      if (sidebarPhoto) {
+        sidebarPhoto.outerHTML = `<img src="${escapeHtml(url)}" alt="avatar" class="user-pill-avatar avatar-sm" id="sidebar-user-photo">`;
+      }
+
       Toast.success('Passport photo updated!');
     } catch (err) {
-      Toast.error('Failed to upload photo. Please try again.');
+      console.error('Photo upload error:', err);
+      const msg = (err && err.message) ? err.message : 'Failed to upload photo. Please try again.';
+      Toast.error(msg);
     } finally {
       Spinner.hide();
       input.value = '';
